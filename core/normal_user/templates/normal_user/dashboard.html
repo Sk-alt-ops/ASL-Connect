@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ design_settings.site_title }} — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    {% if 'Plus Jakarta Sans' in design_settings.dashboard_font_family %}
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&#038;display=swap" rel="stylesheet">
+    {% endif %}
+    {% if 'Inter' in design_settings.dashboard_font_family %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&#038;display=swap" rel="stylesheet">
+    {% endif %}
+    {% if 'Poppins' in design_settings.dashboard_font_family %}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&#038;display=swap" rel="stylesheet">
+    {% endif %}
+    {% if 'Roboto' in design_settings.dashboard_font_family %}
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&#038;display=swap" rel="stylesheet">
+    {% endif %}
+    {% if 'Nunito' in design_settings.dashboard_font_family %}
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&#038;display=swap" rel="stylesheet">
+    {% endif %}
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+    <link rel="stylesheet" href="{% static 'normal_user/css/style.css' %}">
+    {% include 'shared/dashboard_dynamic_style.html' %}
+</head>
+<body>
+
+<div class="app" id="app">
+
+    {# ==================== MOBILE TOP BAR ==================== #}
+    <header class="app-topbar" id="appTopbar">
+        <button class="topbar-btn topbar-hamburger" id="topbarHamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="topbar-brand" id="topbarBrand">
+            <div class="topbar-logo-icon"><i class="fas fa-hand-sparkles"></i></div>
+            <span class="topbar-title" id="topbarTitle">ASL Connect</span>
+        </div>
+        <div class="topbar-actions">
+            <button class="topbar-btn topbar-search-btn" id="topbarSearchBtn" onclick="document.getElementById('chatSearchInput').focus()" aria-label="Search">
+                <i class="fas fa-search"></i>
+            </button>
+            <div class="topbar-notif-wrapper" id="topbarNotifWrapper">
+                <button class="topbar-btn" id="topbarNotifBtn" onclick="toggleNotificationDropdown()" aria-label="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge" id="bellBadge" style="display:none;">0</span>
+                </button>
+                <div class="notif-dropdown" id="notificationDropdown">
+                    <div class="notif-dropdown-header">
+                        <span class="notif-dropdown-title">Notifications</span>
+                        <div class="notif-dropdown-actions">
+                            <button class="notif-action-btn" onclick="markAllNotificationsRead()" title="Mark all read">
+                                <i class="fas fa-check-double"></i>
+                            </button>
+                            <button class="notif-action-btn" onclick="confirmDeleteAllNotifications()" title="Delete all">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="notif-dropdown-list" id="notificationDropdownList">
+                        <div class="notif-dropdown-empty">
+                            <i class="far fa-bell"></i>
+                            <span>No notifications</span>
+                        </div>
+                    </div>
+                    <div class="notif-dropdown-footer">
+                        <button class="notif-view-all-btn" onclick="showPage('notifications')">View All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    {# ==================== SIDEBAR ==================== #}
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-logo"><i class="fas fa-hand-sparkles"></i></div>
+            <span class="sidebar-brand-text">ASL Connect</span>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="sidebar-avatar">n</div>
+            <div class="sidebar-user-info">
+                <div class="sidebar-user-name">normal_user</div>
+                <span class="sidebar-user-role">Normal</span>
+            </div>
+        </div>
+
+        <div class="sidebar-xp">
+            <div class="xp-header">
+                <span class="xp-label">Experience</span>
+                <span class="xp-level">Lv. 4</span>
+            </div>
+            <div class="xp-track">
+                <div class="xp-fill" style="width:68%"></div>
+            </div>
+            <div class="xp-count">680 / 1,000 XP</div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button class="sidebar-nav-item active" data-page="chat" onclick="showPage('chat')">
+                <i class="fas fa-comment-dots"></i><span>Chat</span>
+            </button>
+            <button class="sidebar-nav-item" data-page="friends" onclick="showPage('friends')">
+                <i class="fas fa-user-friends"></i><span>Friends</span>
+                <span class="sidebar-badge" id="friendRequestBadge" style="display:none;">0</span>
+            </button>
+            <button class="sidebar-nav-item" data-page="help" onclick="showPage('help')">
+                <i class="fas fa-life-ring"></i><span>Help</span>
+            </button>
+            <button class="sidebar-nav-item" data-page="notifications" onclick="showPage('notifications')">
+                <i class="fas fa-bell"></i><span>Notifications</span>
+                <span class="sidebar-badge" id="notificationBadge" style="display:none;">0</span>
+            </button>
+            <button class="sidebar-nav-item" data-page="settings" onclick="showPage('settings')">
+                <i class="fas fa-cog"></i><span>Settings</span>
+            </button>
+            <button class="sidebar-nav-item" data-page="profile" onclick="showPage('profile')">
+                <i class="fas fa-user-circle"></i><span>Profile</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="sidebar-signout" onclick="signOut()">
+                <i class="fas fa-sign-out-alt"></i><span>Sign Out</span>
+            </button>
+        </div>
+    </aside>
+
+    {# ==================== SIDEBAR OVERLAY ==================== #}
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    {# ==================== MAIN CONTENT ==================== #}
+    <div class="main-content" id="mainContent">
+
+        {# ============ CHAT LIST PANEL ============ #}
+        <section class="panel-chatlist" id="chatListPanel">
+            <div class="chatlist-header">
+                <div class="chatlist-search">
+                    <i class="fas fa-search chatlist-search-icon"></i>
+                    <input type="text" class="chatlist-search-input" id="chatSearchInput" placeholder="Search conversations..." oninput="onChatSearch(this.value)">
+                </div>
+                <div class="chatlist-tabs">
+                    <button class="chatlist-tab active" onclick="switchChatTab(this, 'all')">All</button>
+                    <button class="chatlist-tab" onclick="switchChatTab(this, 'contacts')">Contacts</button>
+                    <button class="chatlist-tab" onclick="switchChatTab(this, 'groups')">Groups</button>
+                </div>
+            </div>
+            <div class="chatlist-body" id="conversationList">
+                {# Rendered by JS #}
+            </div>
+        </section>
+
+        {# ============ CHAT PANEL ============ #}
+        <section class="panel-chat" id="chatPanel">
+            {# Empty state #}
+            <div class="chat-empty" id="chatEmpty">
+                <div class="chat-empty-icon"><i class="fas fa-comment-dots"></i></div>
+                <h3 class="chat-empty-title">ASL Connect</h3>
+                <p class="chat-empty-text">Select a conversation to start chatting</p>
+            </div>
+
+            {# Chat active state #}
+            <div class="chat-active" id="chatActive" style="display:none;">
+                <div class="chat-header" id="chatHeader">
+                    <button class="chat-back-btn" onclick="closeConversation()" aria-label="Back">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="chat-header-avatar" id="chatAvatar">?</div>
+                    <div class="chat-header-info">
+                        <div class="chat-header-name" id="chatName">Select a conversation</div>
+                        <div class="chat-header-status" id="chatStatus">
+                            <span class="status-indicator online"></span>
+                            <span>Online</span>
+                        </div>
+                    </div>
+                    <button class="chat-header-more" onclick="showChatMenu()" aria-label="Menu">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+
+                <div class="chat-messages" id="messagesArea">
+                    {# Rendered by JS #}
+                </div>
+
+                <div class="chat-input" id="inputArea">
+                    <div class="chat-input-tools">
+                        <button class="chat-tool-btn" onclick="showEmojiPicker()" title="Emoji">
+                            <i class="far fa-smile"></i>
+                        </button>
+                        <button class="chat-tool-btn" onclick="showAttachment()" title="Attach">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                    </div>
+                    <div class="chat-input-field-wrap">
+                        <input type="text" class="chat-input-field" id="messageInput" placeholder="Type a message..." onkeydown="handleKey(event)">
+                    </div>
+                    <button class="chat-send-btn" onclick="sendMessage()" aria-label="Send">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        {# ============ OVERLAY PANEL (Friends, Help, etc) ============ #}
+        <section class="panel-overlay" id="colContent"></section>
+
+    </div>
+
+</div>
+
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle" style="color:var(--green);font-size:18px;"></i>
+    <span id="toastMessage">Done</span>
+</div>
+
+<div id="user-meta"
+     data-user-id="{{ request.user.id }}"
+     data-user-name="{{ request.user.get_full_name|default:request.user.username }}"
+     data-user-username="{{ request.user.username }}"
+     data-user-email="{{ request.user.email }}"
+     data-profile-pic="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% endif %}"
+     style="display:none;">
+</div>
+
+<script defer src="{% static 'normal_user/js/main.js' %}"></script>
+
+</body>
+</html>

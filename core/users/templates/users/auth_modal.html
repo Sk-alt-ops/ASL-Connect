@@ -1,0 +1,102 @@
+{% load static %}
+<!-- ===== LOGIN / REGISTER MODAL ===== -->
+<div class="modal-overlay" id="authModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-tabs">
+                <button class="modal-tab" data-tab="login" onclick="switchTab('login')">SIGN IN</button>
+                <button class="modal-tab active" data-tab="register" onclick="switchTab('register')">CREATE ACCOUNT</button>
+            </div>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+
+        <!-- REGISTER PANEL -->
+        <div class="modal-panel active" id="registerPanel">
+            <div class="modal-body">
+                <div class="modal-title"><h2>Join ASL Connect</h2></div>
+                <div class="modal-subtitle">Start your communication journey today</div>
+                <form onsubmit="event.preventDefault(); handleRegister();">
+                    <div class="modal-form-group">
+                        <label>FULL NAME</label>
+                        <div class="modal-input-wrap">
+                            <span class="input-icon">&#128100;</span>
+                            <input type="text" placeholder="Alex Rivera" id="regName" required>
+                        </div>
+                    </div>
+                    <div class="modal-form-group">
+                        <label>USERNAME</label>
+                        <div class="modal-input-wrap">
+                            <span class="input-icon">@</span>
+                            <input type="text" placeholder="alex_r" id="regUsername" required>
+                        </div>
+                    </div>
+                    <div class="modal-form-group">
+                        <label>EMAIL</label>
+                        <div class="modal-input-wrap">
+                            <span class="input-icon">&#9993;</span>
+                            <input type="email" placeholder="alex@example.com" id="regEmail" required>
+                            <span class="input-status" id="emailStatus"></span>
+                        </div>
+                    </div>
+                    <div class="modal-form-group">
+                        <label>PASSWORD</label>
+                        <div class="modal-input-wrap">
+                            <span class="input-icon">&#128274;</span>
+                            <input type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" id="regPassword" required>
+                        </div>
+                    </div>
+                    <div class="modal-form-group">
+                        <label>CONFIRM PASSWORD</label>
+                        <div class="modal-input-wrap">
+                            <span class="input-icon">&#128274;</span>
+                            <input type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" id="regConfirm" required>
+                            <span class="input-status" id="confirmStatus"></span>
+                        </div>
+                    </div>
+                    <div class="modal-form-group">
+                        <label>DISABILITY STATUS</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-btn" id="btnYes" onclick="setDisability(true)">Yes</button>
+                            <button type="button" class="toggle-btn active" id="btnNo" onclick="setDisability(false)">No</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="modal-btn">Create Account</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                Already have an account? <a onclick="switchTab('login')">Sign In</a>
+            </div>
+        </div>
+
+        <!-- LOGIN PANEL -->
+        <div class="modal-panel" id="loginPanel">
+            <div class="modal-body">
+                <div class="modal-title"><h2>Welcome Back</h2></div>
+                <div class="modal-subtitle">Access your ASL Connect account</div>
+                <form onsubmit="event.preventDefault(); handleLogin();">
+                    <div class="modal-form-group">
+                        <label>EMAIL OR USERNAME</label>
+                        <div class="modal-input-wrap">
+                            <span class="input-icon">&#9993;</span>
+                            <input type="text" placeholder="alex.rivera@example.com" id="loginEmail" required>
+                        </div>
+                    </div>
+                    <div class="modal-form-group">
+                        <div class="label-row">
+                            <label>PASSWORD</label>
+                            <a href="#">FORGOT?</a>
+                        </div>
+                        <div class="modal-input-wrap">
+                            <span class="input-icon">&#128274;</span>
+                            <input type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" id="loginPassword" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="modal-btn">Login</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                Don't have an account? <a onclick="switchTab('register')">Sign up for free</a>
+            </div>
+        </div>
+    </div>
+</div>

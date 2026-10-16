@@ -1,0 +1,557 @@
+{% load static %}
+{% load design_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ design_settings.site_title }} &mdash; AI-Powered ASL Communication</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&#038;display=swap" rel="stylesheet">
+    {% if design_settings.landing_font_family != 'Inter, sans-serif' %}
+    <link href="https://fonts.googleapis.com/css2?family={{ design_settings.landing_font_family|urlencode }}&#038;display=swap" rel="stylesheet">
+    {% endif %}
+    {% if design_settings.landing_favicon %}
+    <link rel="icon" type="image/x-icon" href="{{ design_settings.landing_favicon.url }}">
+    {% endif %}
+    <link rel="stylesheet" href="{% static 'landing/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'users/css/auth.css' %}">
+    <style>
+        :root {
+            --primary: {{ design_settings.landing_primary_color }};
+            --primary-dark: {{ design_settings.landing_primary_dark }};
+            --primary-light: {{ design_settings.landing_primary_light }};
+            --text-dark: {{ design_settings.landing_text_dark }};
+            --text-gray: {{ design_settings.landing_text_gray }};
+            --text-light: #9ca3af;
+            --bg-white: {{ design_settings.landing_bg_white }};
+            --bg-light: {{ design_settings.landing_bg_light }};
+            --bg-card: #f1f5f9;
+            --border: #e2e8f0;
+        }
+        body { font-family: {{ design_settings.landing_font_family|safe }}; }
+        .navbar { background: {{ design_settings.landing_nav_bg }}; }
+        .logo-icon { background: {{ design_settings.landing_logo_icon_bg }}; }
+        .hero-circle { background: linear-gradient(135deg, {{ design_settings.landing_hero_gradient_start }}, {{ design_settings.landing_hero_gradient_end }}); }
+        {% if design_settings.landing_hero_image %}
+        .hero-bg-image { background: url('{{ design_settings.landing_hero_image.url }}') center/cover no-repeat; border-radius: 20px; }
+        .hero-circle { display: none; }
+        {% endif %}
+        .cta { background: linear-gradient(135deg, {{ design_settings.landing_cta_gradient_start }}, {{ design_settings.landing_cta_gradient_end }}); }
+        {% if cta_s.color_gradient_start and cta_s.color_gradient_end %}.cta { background: linear-gradient(135deg, {{ cta_s.color_gradient_start }}, {{ cta_s.color_gradient_end }}) !important; }{% endif %}
+        .stats { background: linear-gradient(135deg, {{ design_settings.landing_stats_gradient_start }}, {{ design_settings.landing_stats_gradient_end }}); }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="#" class="logo">
+                {% if design_settings.landing_logo_image %}
+                <img src="{{ design_settings.landing_logo_image.url }}" alt="Logo" style="height:32px;width:auto">
+                {% else %}
+                <div class="logo-icon">&#9995;</div>
+                {% endif %}
+                {{ design_settings.landing_logo_text }}
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <a href="#" class="btn btn-outline" onclick="openModal('login'); return false;">Sign In</a>
+            <a href="#" class="btn btn-primary" onclick="openModal('register'); return false;">Get Started &rarr;</a>
+            <button class="mobile-menu-btn" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== MOBILE MENU DRAWER ===== -->
+    <div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Mobile navigation">
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="mobile-menu-actions">
+            <a href="#" class="btn btn-outline" onclick="closeMobileMenu(); openModal('login'); return false;">Sign In</a>
+            <a href="#" class="btn btn-primary" onclick="closeMobileMenu(); openModal('register'); return false;">Get Started &rarr;</a>
+        </div>
+    </div>
+
+    <!-- ===== PAGE CONTENT ===== -->
+    <main class="page-content">
+
+        <!-- ===== PAGE: HOME ===== -->
+            <div class="page active" id="page-home">
+
+            <!-- ===== HERO ===== -->
+            {% if layout.section_hero or layout.section_hero is None %}
+            <section class="hero" id="home">
+                {% if design_settings.landing_hero_video %}
+                <video class="hero-video-bg" autoplay muted loop playsinline preload="auto">
+                    <source src="{{ design_settings.landing_hero_video.url }}" type="video/mp4">
+                </video>
+                {% else %}
+                <video class="hero-video-bg" autoplay muted loop playsinline preload="auto">
+                    <source src="{% static 'landing/videos/hero-bg.mp4' %}" type="video/mp4">
+                </video>
+                {% endif %}
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1 class="hero-title">{{ texts.hero_heading|default:'Breaking Communication Barriers with ASL Connect'|safe }}</h1>
+                    <p class="hero-subtitle">{{ texts.hero_description|default:'Connect Deaf and hearing communities through real-time messaging, ASL symbols, gesture-based communication, and intelligent translation.' }}</p>
+                    <div class="hero-buttons">
+                        <a href="#" class="btn btn-primary btn-hero" onclick="openModal('register'); return false;">{{ texts.hero_primary_btn|default:'Get Started' }}</a>
+                        <a href="#features" class="btn btn-outline btn-hero">{{ texts.hero_secondary_btn|default:'Explore Features' }}</a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <span class="hero-stat-value">10,000+</span>
+                            <span class="hero-stat-label">Messages Sent</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-value">500+</span>
+                            <span class="hero-stat-label">Users Connected</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-value">100%</span>
+                            <span class="hero-stat-label">Accessible Communication</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+            <!-- ===== FOOTER ===== -->
+            <footer class="footer">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <a href="#" class="logo">
+                            {% if design_settings.landing_logo_image %}
+                            <img src="{{ design_settings.landing_logo_image.url }}" alt="Logo" style="height:32px;width:auto">
+                            {% else %}
+                            <div class="logo-icon">&#9995;</div>
+                            {% endif %}
+                            {{ design_settings.landing_logo_text }}
+                        </a>
+                        <p>{{ texts.footer_text|default:'Making communication accessible for everyone.' }}</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#how-it-works">How It Works</a></li>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#contact">Contact Us</a></li>
+                            <li><a href="#about">About Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>ASL Connect</p>
+                </div>
+            </footer>
+        </div>
+
+        <!-- ===== PAGE: HOW IT WORKS ===== -->
+        <div class="page" id="page-how-it-works">
+
+            {% if layout.section_how_it_works or layout.section_how_it_works is None %}
+            <section class="how-it-works" id="how-it-works">
+                <div class="section">
+                    <div class="section-header reveal">
+                        <h2>{{ texts.how_it_works_heading|default:'How It Works' }}</h2>
+                        <p>{{ texts.how_it_works_description|default:'Three simple steps to start communicating across the ASL-hearing divide' }}</p>
+                    </div>
+                    <div class="steps">
+                        {% with steps=texts.how_it_works_steps|json_loads %}
+                        {% for step in steps %}
+                        <div class="step reveal">
+                            <div class="step-number">{{ forloop.counter }}</div>
+                            <div class="step-card">
+                                <div class="step-icon">{{ step.icon }}</div>
+                                <h3>{{ step.title }}</h3>
+                                <p>{{ step.description }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- ===== FOOTER ===== -->
+            <footer class="footer">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <a href="#" class="logo">
+                            {% if design_settings.landing_logo_image %}
+                            <img src="{{ design_settings.landing_logo_image.url }}" alt="Logo" style="height:32px;width:auto">
+                            {% else %}
+                            <div class="logo-icon">&#9995;</div>
+                            {% endif %}
+                            {{ design_settings.landing_logo_text }}
+                        </a>
+                        <p>{{ texts.footer_text|default:'Making communication accessible for everyone.' }}</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#how-it-works">How It Works</a></li>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#contact">Contact Us</a></li>
+                            <li><a href="#about">About Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>ASL Connect</p>
+                </div>
+            </footer>
+        </div>
+
+        <!-- ===== PAGE: FEATURES ===== -->
+        <div class="page" id="page-features">
+
+            {% if layout.section_features or layout.section_features is None %}
+            <section class="section" id="features">
+                <div class="section-header reveal">
+                    <h2>{{ texts.features_heading|default:'Powerful Features' }}</h2>
+                    <p>{{ texts.features_description|default:'Everything you need for seamless ASL communication, built with accessibility at its core' }}</p>
+                </div>
+                <div class="features-grid">
+                    {% with items=texts.features_items|json_loads %}
+                    {% for item in items %}
+                    <div class="feature-item reveal">
+                        <div class="feature-icon">{{ item.icon }}</div>
+                        <div class="feature-text">
+                            <h3>{{ item.title }}</h3>
+                            <p>{{ item.description }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endwith %}
+                </div>
+            </section>
+            {% endif %}
+
+            {% if layout.section_testimonials or layout.section_testimonials is None %}
+            <section class="section">
+                <div class="testimonials-header reveal">
+                    <div class="testimonials-badge">&#11088; Testimonials</div>
+                    <h2>{{ texts.testimonials_heading|default:"What Our Users Say" }}</h2>
+                    <p>{{ texts.testimonials_description|default:"Hear from the people who use ASL Connect to communicate every day" }}</p>
+                </div>
+                <div class="testimonials-grid">
+                    {% with testimonials=texts.testimonials|json_loads %}
+                    {% for t in testimonials %}
+                    <div class="testimonial-card reveal">
+                        <div class="quote-icon">&#8220;</div>
+                        <p>{{ t.text }}</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar" style="background:{{ t.avatar }};">{{ t.initials }}</div>
+                            <div class="author-info"><h4>{{ t.name }}</h4><span>{{ t.role }}</span></div>
+                            <div class="stars"><span class="star">&#9733;</span><span class="star">&#9733;</span><span class="star">&#9733;</span><span class="star">&#9733;</span><span class="star">&#9733;</span></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endwith %}
+                </div>
+                <div class="testimonials-cta reveal">
+                    <a href="{% url 'users:login' %}" class="btn btn-primary">Share Your Story</a>
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- ===== FOOTER ===== -->
+            <footer class="footer">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <a href="#" class="logo">
+                            {% if design_settings.landing_logo_image %}
+                            <img src="{{ design_settings.landing_logo_image.url }}" alt="Logo" style="height:32px;width:auto">
+                            {% else %}
+                            <div class="logo-icon">&#9995;</div>
+                            {% endif %}
+                            {{ design_settings.landing_logo_text }}
+                        </a>
+                        <p>{{ texts.footer_text|default:'Making communication accessible for everyone.' }}</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#how-it-works">How It Works</a></li>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#contact">Contact Us</a></li>
+                            <li><a href="#about">About Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>ASL Connect</p>
+                </div>
+            </footer>
+        </div>
+
+        <!-- ===== PAGE: ABOUT ===== -->
+        <div class="page" id="page-about">
+
+            {% if layout.section_about or layout.section_about is None %}
+            <section class="about" id="about">
+                <div class="section">
+                    <div class="about-content reveal">
+                        <div class="about-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                            {{ texts.about_badge|default:'About ASL Connect' }}
+                        </div>
+                        <h2>{{ texts.about_heading|default:'Making Communication Accessible for Everyone' }}</h2>
+                        <p>{{ texts.about_description|default:'ASL Connect is a camera-based AI communication platform designed to bridge the gap between ASL (American Sign Language) users and hearing users.' }}</p>
+                    </div>
+                    <div class="about-cards">
+                        {% with cards=texts.about_cards|json_loads %}
+                        {% for card in cards %}
+                        <div class="about-card reveal">
+                            <div class="icon">{{ card.icon }}</div>
+                            <h3>{{ card.title }}</h3>
+                            <p>{{ card.description }}</p>
+                        </div>
+                        {% endfor %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- ===== MESSAGE FLOW ===== -->
+            {% if layout.section_message_flow or layout.section_message_flow is None %}
+            <section class="section">
+                <div class="message-flow reveal">
+                    <div class="message-flow-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M12 8v8"/></svg>
+                        <h3>Message Flow Between Users</h3>
+                    </div>
+                    <p>How messages are displayed between different user types</p>
+                    <table class="flow-table">
+                        <thead>
+                            <tr>
+                                <th>Sender &rarr; Receiver</th>
+                                <th>What Receiver Sees</th>
+                                <th>How It Works</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Normal &rarr; Normal</td><td><span class="flow-tag tag-text">Text Message</span></td><td>Standard text chat between hearing users</td></tr>
+                            <tr><td>Normal &rarr; ASL</td><td><span class="flow-tag tag-symbols">&#9995; ASL Alphabet Symbols</span></td><td>Each letter is converted to its ASL alphabet symbol image from the database</td></tr>
+                            <tr><td>ASL &rarr; Normal</td><td><span class="flow-tag tag-readable">Readable Text</span></td><td>Camera detects hand signs and converts them into English text automatically</td></tr>
+                            <tr><td>ASL &rarr; ASL</td><td><span class="flow-tag tag-video">&#127909; Video Messages</span></td><td>ASL users send and receive video messages directly—natural sign language communication</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- ===== FOOTER ===== -->
+            <footer class="footer">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <a href="#" class="logo">
+                            {% if design_settings.landing_logo_image %}
+                            <img src="{{ design_settings.landing_logo_image.url }}" alt="Logo" style="height:32px;width:auto">
+                            {% else %}
+                            <div class="logo-icon">&#9995;</div>
+                            {% endif %}
+                            {{ design_settings.landing_logo_text }}
+                        </a>
+                        <p>{{ texts.footer_text|default:'Making communication accessible for everyone.' }}</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#how-it-works">How It Works</a></li>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#contact">Contact Us</a></li>
+                            <li><a href="#about">About Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>ASL Connect</p>
+                </div>
+            </footer>
+        </div>
+
+        <!-- ===== PAGE: CONTACT ===== -->
+        <div class="page" id="page-contact">
+
+            {% if layout.section_contact or layout.section_contact is None %}
+            <section class="contact" id="contact">
+                <div class="section">
+                    <div class="contact-header reveal">
+                        <div class="contact-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            Get In Touch
+                        </div>
+                        <h2>{{ texts.contact_heading|default:'Contact Us' }}</h2>
+                        <p>{{ texts.contact_description|default:"Have questions or need support? We're here to help." }}</p>
+                    </div>
+                    <div class="contact-grid">
+                        <div class="contact-info reveal">
+                            <h3>{{ texts.contact_info_heading|default:"Let's Connect" }}</h3>
+                            <p>{{ texts.contact_info_text|default:'ASL Connect is a camera-based AI communication platform bridging the gap between ASL users and hearing users.' }}</p>
+                            <div class="contact-detail">
+                                <div class="icon">&#9993;</div>
+                                <div><h4>Email</h4><p>support@aslconnect.com</p></div>
+                            </div>
+                            <div class="contact-detail">
+                                <div class="icon">&#127760;</div>
+                                <div><h4>Platform</h4><p>Camera-based ASL Detection with MediaPipe</p></div>
+                            </div>
+                        </div>
+                        <div class="contact-form reveal">
+                            <form action="{% url 'core:contact_submit' %}" method="post" onsubmit="event.preventDefault(); submitContactForm(this);">
+                                {% csrf_token %}
+                                <div class="form-group"><label>Name</label><input type="text" name="name" placeholder="Your name" required></div>
+                                <div class="form-group"><label>Email</label><input type="email" name="email" placeholder="your@email.com" required></div>
+                                <div class="form-group"><label>Subject</label><input type="text" name="subject" placeholder="How can we help?" required></div>
+                                <div class="form-group"><label>Message</label><textarea name="message" placeholder="Tell us more..." required></textarea></div>
+                                <button type="submit" class="btn btn-primary">Send Message &#9992;</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- ===== CTA ===== -->
+            {% if layout.section_cta or layout.section_cta is None %}
+            <section class="cta reveal">
+                <h2>{{ texts.cta_heading|default:'Ready to Bridge the Gap?' }}</h2>
+                <p>{{ texts.cta_description|default:'Join ASL Connect today and start communicating with ASL users instantly. Camera-based sign detection with instant translation.' }}</p>
+                <a href="#" class="btn btn-white btn-lg" onclick="openModal('register'); return false;">Get Started Free &rarr;</a>
+            </section>
+            {% endif %}
+
+            <!-- ===== FOOTER ===== -->
+            <footer class="footer">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <a href="#" class="logo">
+                            {% if design_settings.landing_logo_image %}
+                            <img src="{{ design_settings.landing_logo_image.url }}" alt="Logo" style="height:32px;width:auto">
+                            {% else %}
+                            <div class="logo-icon">&#9995;</div>
+                            {% endif %}
+                            {{ design_settings.landing_logo_text }}
+                        </a>
+                        <p>{{ texts.footer_text|default:'Making communication accessible for everyone.' }}</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#how-it-works">How It Works</a></li>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#contact">Contact Us</a></li>
+                            <li><a href="#about">About Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>ASL Connect</p>
+                </div>
+            </footer>
+        </div>
+
+    </main>
+
+    {% include "users/auth_modal.html" %}
+
+    <script defer src="{% static 'landing/js/main.js' %}"></script>
+    <script defer src="{% static 'users/js/auth.js' %}"></script>
+</body>
+</html>

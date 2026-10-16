@@ -1,0 +1,51 @@
+<style>
+    :root {
+        --primary: {{ design_settings.dashboard_sidebar_accent }};
+        --primary-light: {{ design_settings.dashboard_sidebar_accent }}dd;
+        --primary-dark: {{ design_settings.dashboard_sidebar_accent }}bb;
+        --accent: {{ design_settings.dashboard_sidebar_accent }};
+        --accent-light: {{ design_settings.dashboard_sidebar_accent }}cc;
+        --bg-gradient-start: {{ design_settings.dashboard_header_gradient_start }};
+        --bg-gradient-end: {{ design_settings.dashboard_header_gradient_end }};
+        --card-bg: {{ design_settings.dashboard_card_bg }};
+        --text: {{ design_settings.dashboard_text_primary }};
+        --text-secondary: {{ design_settings.dashboard_text_secondary }};
+        --text-light: {{ design_settings.dashboard_text_secondary }}cc;
+        --border: {{ design_settings.dashboard_card_border }};
+    }
+    body { font-family: {{ design_settings.dashboard_font_family|safe }}; }
+    .sidebar { background: {{ design_settings.dashboard_sidebar_bg }}; }
+    .sidebar-logo { background: {{ design_settings.dashboard_sidebar_logo_bg }}; }
+    .sidebar-user-name { color: {{ design_settings.dashboard_sidebar_text }}; }
+    .sidebar-user-role { color: {{ design_settings.dashboard_sidebar_accent }}; background: {{ design_settings.dashboard_sidebar_accent }}18; }
+    .sidebar-nav-item { color: {{ design_settings.dashboard_sidebar_text }}cc; }
+    .sidebar-nav-item:hover { background: {{ design_settings.dashboard_sidebar_accent }}12; color: {{ design_settings.dashboard_sidebar_accent }}; }
+    .sidebar-nav-item.active { background: {{ design_settings.dashboard_sidebar_accent }}18; color: {{ design_settings.dashboard_sidebar_accent }}; }
+    .sidebar-signout { color: {{ design_settings.dashboard_sidebar_text }}cc; }
+    .sidebar-signout:hover { color: var(--red); background: #fef2f2; }
+    .chatlist-tab:hover { background: {{ design_settings.dashboard_sidebar_accent }}12; color: {{ design_settings.dashboard_sidebar_accent }}; }
+    .chatlist-tab.active { background: {{ design_settings.dashboard_sidebar_accent }}18; color: {{ design_settings.dashboard_sidebar_accent }}; }
+    .conversation-item:hover { background: {{ design_settings.dashboard_sidebar_bg }}; }
+    .conversation-item.active { background: {{ design_settings.dashboard_sidebar_accent }}0d; border-left-color: {{ design_settings.dashboard_sidebar_accent }}; }
+    .chat-messages { background: {{ design_settings.dashboard_chat_bg }}; }
+    .chat-header { background: {{ design_settings.dashboard_card_bg }}; }
+    .chat-input { background: {{ design_settings.dashboard_card_bg }}; }
+    .panel-overlay { background: {{ design_settings.dashboard_card_bg }}; }
+    .chatlist-search-input:focus { border-color: {{ design_settings.dashboard_sidebar_accent }}; box-shadow: 0 0 0 3px {{ design_settings.dashboard_sidebar_accent }}14; }
+    .chat-tool-btn:hover { background: {{ design_settings.dashboard_sidebar_accent }}12; color: {{ design_settings.dashboard_sidebar_accent }}; }
+    .chat-input-field:focus { border-color: {{ design_settings.dashboard_sidebar_accent }}; }
+    .chat-tool-btn.active { background: {{ design_settings.dashboard_sidebar_accent }}18; color: {{ design_settings.dashboard_sidebar_accent }}; border-color: {{ design_settings.dashboard_sidebar_accent }}; }
+    .chat-header-more:hover { background: {{ design_settings.dashboard_sidebar_accent }}12; color: {{ design_settings.dashboard_sidebar_accent }}; }
+    .message.received .message-bubble { background: {{ design_settings.dashboard_card_bg }}; color: {{ design_settings.dashboard_text_primary }}; }
+    .message.sent .message-bubble { background: linear-gradient(135deg, {{ design_settings.dashboard_sidebar_accent }}, {{ design_settings.dashboard_sidebar_accent }}dd); }
+    .chat-send-btn { background: linear-gradient(135deg, {{ design_settings.dashboard_sidebar_accent }}, {{ design_settings.dashboard_sidebar_accent }}dd); }
+    .chat-send-btn:hover { box-shadow: 0 4px 12px {{ design_settings.dashboard_sidebar_accent }}4d; }
+    .sidebar-avatar { background: linear-gradient(135deg, {{ design_settings.dashboard_sidebar_accent }}, {{ design_settings.dashboard_sidebar_accent }}cc); }
+    .conversation-unread { background: {{ design_settings.dashboard_sidebar_accent }}; }
+    .unread-badge { background: {{ design_settings.dashboard_sidebar_accent }}; }
+    .app { box-shadow: 0 8px 40px {{ design_settings.dashboard_sidebar_accent }}1a; }
+    .sidebar-brand-text { color: {{ design_settings.dashboard_sidebar_text }}; }
+    .sidebar-nav-item span { color: inherit; }
+    .xp-level { color: {{ design_settings.dashboard_sidebar_accent }}; }
+    .xp-fill { background: linear-gradient(90deg, {{ design_settings.dashboard_sidebar_accent }}, {{ design_settings.dashboard_sidebar_accent }}cc); }
+</style>

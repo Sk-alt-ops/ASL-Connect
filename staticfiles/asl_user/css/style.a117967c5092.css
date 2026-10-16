@@ -1,0 +1,1238 @@
+/* ========================================================================
+   ASL USER DASHBOARD — Complete UI/UX Redesign
+   Modern messaging-app aesthetic inspired by WhatsApp, Discord, Slack
+   ======================================================================== */
+
+/* ========================================================================
+   1. CSS RESET & CUSTOM PROPERTIES
+   ======================================================================== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+    --primary:#7c3aed;
+    --primary-light:#a78bfa;
+    --primary-dark:#5b21b6;
+    --accent:#f59e0b;
+    --accent-light:#fbbf24;
+    --bg:#f0f2f5;
+    --surface:#ffffff;
+    --surface-hover:#f5f5f5;
+    --text:#111b21;
+    --text-secondary:#667781;
+    --text-light:#8696a0;
+    --border:#e9edef;
+    --border-light:#f0f2f5;
+    --green:#25d366;
+    --green-dark:#20bd5a;
+    --red:#ef4444;
+    --orange:#f59e0b;
+    --blue:#53bdeb;
+    --shadow-sm:0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md:0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg:0 12px 48px rgba(0,0,0,0.12);
+    --radius-sm:8px;
+    --radius-md:12px;
+    --radius-lg:16px;
+    --radius-full:50%;
+    --sidebar-width:280px;
+    --topbar-height:56px;
+    --transition:0.2s cubic-bezier(0.4,0,0.2,1)
+}
+
+/* ========================================================================
+   2. BASE
+   ======================================================================== */
+html,body{height:100%;overflow:hidden}
+body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    font-size:14px;
+    line-height:1.4;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale
+}
+
+.app{
+    display:flex;
+    flex-direction:column;
+    height:100dvh;
+    width:100vw;
+    max-width:100%;
+    background:var(--bg);
+    position:relative
+}
+
+/* ========================================================================
+   3. ANIMATIONS
+   ======================================================================== */
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+/* ========================================================================
+   4. SCROLLBAR
+   ======================================================================== */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#9ca3af}
+
+/* ========================================================================
+   5. TOP BAR
+   ======================================================================== */
+.app-topbar{
+    display:none;
+    height:var(--topbar-height);
+    padding:0 12px;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    align-items:center;
+    gap:8px;
+    flex-shrink:0;
+    z-index:100;
+    position:relative
+}
+
+.topbar-btn{
+    width:40px;height:40px;border:none;border-radius:var(--radius-full);
+    background:transparent;color:var(--text-secondary);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;transition:var(--transition);position:relative;flex-shrink:0
+}
+.topbar-btn:hover{background:var(--surface-hover);color:var(--text)}
+
+.topbar-brand{
+    display:flex;align-items:center;gap:10px;flex:1;min-width:0
+}
+.topbar-logo-icon{
+    width:32px;height:32px;border-radius:var(--radius-sm);
+    background:linear-gradient(135deg,var(--accent),var(--accent-light));
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:14px;flex-shrink:0
+}
+.topbar-title{
+    font-size:16px;font-weight:700;color:var(--text);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+
+.topbar-actions{display:flex;align-items:center;gap:4px}
+
+.topbar-notif-wrapper{position:relative}
+
+.notif-badge{
+    position:absolute;top:-2px;right:-2px;
+    min-width:18px;height:18px;border-radius:9px;
+    background:var(--red);color:#fff;
+    font-size:10px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    padding:0 4px;border:2px solid var(--surface)
+}
+
+/* Notification Dropdown */
+.notif-dropdown{
+    position:absolute;top:48px;right:0;
+    width:380px;max-width:calc(100vw - 24px);
+    background:var(--surface);border-radius:var(--radius-md);
+    box-shadow:var(--shadow-lg);border:1px solid var(--border);
+    display:none;overflow:hidden;z-index:1000;
+    animation:slideDown 0.2s ease
+}
+.notif-dropdown.show{display:block}
+
+.notif-dropdown-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 20px 12px;border-bottom:1px solid var(--border)
+}
+.notif-dropdown-title{font-size:16px;font-weight:700}
+.notif-dropdown-actions{display:flex;gap:6px}
+
+.notif-action-btn{
+    width:32px;height:32px;border-radius:var(--radius-sm);
+    border:1px solid var(--border);background:transparent;
+    color:var(--text-light);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;transition:var(--transition)
+}
+.notif-action-btn:hover{background:var(--surface-hover);color:var(--accent);border-color:var(--accent)}
+
+.notif-dropdown-list{max-height:380px;overflow-y:auto;padding:8px 0}
+.notif-dropdown-empty{
+    display:flex;flex-direction:column;align-items:center;
+    padding:48px 20px;color:var(--text-light);gap:12px
+}
+.notif-dropdown-empty i{font-size:40px;opacity:0.3}
+.notif-dropdown-empty span{font-size:14px;font-weight:500}
+
+.notif-dropdown-footer{padding:10px 20px;border-top:1px solid var(--border)}
+.notif-view-all-btn{
+    width:100%;padding:10px;border-radius:var(--radius-sm);
+    border:none;background:var(--bg);color:var(--primary);
+    font-size:13px;font-weight:600;cursor:pointer;transition:var(--transition);
+    font-family:inherit
+}
+.notif-view-all-btn:hover{background:var(--border-light)}
+
+/* ========================================================================
+   6. SIDEBAR
+   ======================================================================== */
+.sidebar{
+    position:fixed;top:0;left:0;bottom:0;
+    width:var(--sidebar-width);max-width:85vw;
+    background:var(--surface);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;
+    padding:20px 16px;z-index:300;
+    transform:translateX(-100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    overflow-y:auto
+}
+.sidebar.open{transform:translateX(0)}
+
+.sidebar-overlay{
+    display:none;position:fixed;inset:0;
+    background:rgba(0,0,0,0.4);z-index:299;
+    backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)
+}
+.sidebar-overlay.open{display:block}
+
+.sidebar-brand{
+    display:flex;align-items:center;gap:12px;
+    padding:0 8px 20px;border-bottom:1px solid var(--border);margin-bottom:16px
+}
+.sidebar-logo{
+    width:40px;height:40px;border-radius:var(--radius-sm);
+    background:linear-gradient(135deg,var(--accent),var(--accent-light));
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:18px;flex-shrink:0
+}
+.sidebar-brand-text{font-size:18px;font-weight:800;color:var(--text)}
+
+.sidebar-user{
+    display:flex;align-items:center;gap:12px;
+    padding:0 8px 16px;border-bottom:1px solid var(--border);margin-bottom:12px
+}
+.sidebar-avatar{
+    width:44px;height:44px;border-radius:var(--radius-full);
+    background:linear-gradient(135deg,var(--accent),var(--accent-light));
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:20px;font-weight:600;flex-shrink:0
+}
+.sidebar-user-info{flex:1;min-width:0}
+.sidebar-user-name{font-size:14px;font-weight:600;color:var(--text)}
+.sidebar-user-role{
+    font-size:10px;font-weight:700;color:var(--accent);
+    background:rgba(245,158,11,0.12);
+    padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px;
+    display:inline-block;margin-top:2px
+}
+
+.sidebar-xp{padding:0 8px 16px;margin-bottom:8px}
+.xp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.xp-label{font-size:11px;font-weight:600;color:var(--text-secondary)}
+.xp-level{font-size:11px;font-weight:700;color:var(--accent)}
+.xp-track{
+    width:100%;height:6px;background:var(--border);
+    border-radius:3px;overflow:hidden
+}
+.xp-fill{
+    height:100%;border-radius:3px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-light));
+    transition:width 0.6s ease
+}
+.xp-count{font-size:10px;color:var(--text-light);margin-top:4px;text-align:center}
+
+.sidebar-nav{flex:1;display:flex;flex-direction:column;gap:2px;overflow-y:auto;padding:0 4px}
+.sidebar-nav-item{
+    display:flex;align-items:center;gap:12px;
+    padding:11px 12px;border-radius:var(--radius-sm);
+    font-size:14px;font-weight:500;color:var(--text-secondary);
+    cursor:pointer;transition:var(--transition);
+    border:none;background:none;width:100%;text-align:left;font-family:inherit
+}
+.sidebar-nav-item i{width:20px;text-align:center;font-size:16px;flex-shrink:0}
+.sidebar-nav-item:hover{background:var(--surface-hover);color:var(--text)}
+.sidebar-nav-item.active{background:rgba(124,58,237,0.1);color:var(--primary);font-weight:600}
+
+.sidebar-badge{
+    margin-left:auto;background:var(--accent);color:#fff;
+    font-size:10px;font-weight:700;min-width:20px;height:20px;
+    border-radius:10px;display:flex;align-items:center;
+    justify-content:center;padding:0 5px
+}
+
+.sidebar-footer{
+    padding-top:12px;border-top:1px solid var(--border);margin-top:auto
+}
+.sidebar-signout{
+    display:flex;align-items:center;gap:10px;
+    padding:11px 12px;border-radius:var(--radius-sm);
+    font-size:14px;font-weight:500;color:var(--text-secondary);
+    cursor:pointer;transition:var(--transition);
+    border:none;background:none;width:100%;font-family:inherit
+}
+.sidebar-signout:hover{background:#fef2f2;color:var(--red)}
+.sidebar-signout i{width:20px;text-align:center;font-size:16px}
+
+/* ========================================================================
+   7. MAIN CONTENT
+   ======================================================================== */
+.main-content{
+    flex:1;display:flex;overflow:hidden;
+    height:100%;position:relative
+}
+
+/* ========================================================================
+   8. CHAT LIST PANEL
+   ======================================================================== */
+.panel-chatlist{
+    width:380px;min-width:320px;max-width:420px;
+    background:var(--surface);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;flex-shrink:0
+}
+
+.chatlist-header{padding:16px 16px 8px;border-bottom:1px solid var(--border)}
+.chatlist-search{position:relative;margin-bottom:10px}
+.chatlist-search-icon{
+    position:absolute;left:14px;top:50%;transform:translateY(-50%);
+    color:var(--text-light);font-size:14px;pointer-events:none
+}
+.chatlist-search-input{
+    width:100%;padding:10px 14px 10px 40px;
+    border:none;border-radius:var(--radius-sm);
+    font-size:13px;outline:none;
+    background:var(--bg);transition:var(--transition);font-family:inherit
+}
+.chatlist-search-input:focus{background:var(--surface);box-shadow:0 0 0 2px var(--primary-light)}
+
+.chatlist-tabs{display:flex;gap:4px}
+.chatlist-tab{
+    padding:7px 14px;border-radius:16px;
+    font-size:12px;font-weight:500;cursor:pointer;
+    border:none;background:transparent;
+    color:var(--text-secondary);transition:var(--transition);font-family:inherit;
+    white-space:nowrap
+}
+.chatlist-tab:hover{background:var(--surface-hover);color:var(--text)}
+.chatlist-tab.active{background:rgba(124,58,237,0.1);color:var(--primary);font-weight:600}
+
+.chatlist-body{flex:1;overflow-y:auto;padding:4px 0}
+
+/* Conversation Items */
+.conversation-item{
+    display:flex;align-items:center;gap:12px;
+    padding:12px 16px;cursor:pointer;transition:var(--transition)
+}
+.conversation-item:hover{background:var(--surface-hover)}
+.conversation-item.active{background:rgba(124,58,237,0.06)}
+
+.conversation-avatar{
+    width:48px;height:48px;border-radius:var(--radius-full);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:18px;font-weight:600;
+    flex-shrink:0;position:relative;overflow:hidden
+}
+.conversation-avatar img{width:100%;height:100%;object-fit:cover}
+.conversation-avatar .online-dot{
+    position:absolute;bottom:1px;right:1px;
+    width:12px;height:12px;background:var(--green);
+    border:2px solid var(--surface);border-radius:var(--radius-full)
+}
+.conversation-info{flex:1;min-width:0}
+.conversation-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:2px}
+.conversation-preview{
+    font-size:12px;color:var(--text-light);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.conversation-meta{
+    display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0
+}
+.conversation-time{font-size:11px;color:var(--text-light);white-space:nowrap}
+.conversation-unread{
+    background:var(--green);color:#fff;
+    font-size:11px;font-weight:700;min-width:20px;height:20px;
+    border-radius:10px;display:flex;align-items:center;
+    justify-content:center;padding:0 5px
+}
+
+/* ========================================================================
+   9. CHAT PANEL
+   ======================================================================== */
+.panel-chat{
+    flex:1;display:flex;flex-direction:column;
+    background:var(--bg);min-width:0;position:relative
+}
+
+/* Empty state */
+.chat-empty{
+    flex:1;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:40px 20px;text-align:center
+}
+.chat-empty-icon{
+    width:80px;height:80px;border-radius:var(--radius-full);
+    background:rgba(124,58,237,0.1);
+    display:flex;align-items:center;justify-content:center;
+    font-size:36px;color:var(--primary);margin-bottom:20px
+}
+.chat-empty-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.chat-empty-text{font-size:14px;color:var(--text-secondary);max-width:320px}
+
+/* Active chat */
+.chat-active{flex:1;display:flex;flex-direction:column;min-height:0}
+
+/* Chat Header */
+.chat-header{
+    display:flex;align-items:center;gap:12px;
+    padding:12px 16px;background:var(--surface);
+    border-bottom:1px solid var(--border);flex-shrink:0
+}
+.chat-back-btn{
+    display:none;width:36px;height:36px;border-radius:var(--radius-full);
+    border:none;background:transparent;color:var(--text-secondary);
+    cursor:pointer;align-items:center;justify-content:center;font-size:18px;
+    transition:var(--transition);flex-shrink:0
+}
+.chat-back-btn:hover{background:var(--surface-hover);color:var(--text)}
+
+.chat-header-avatar{
+    width:40px;height:40px;border-radius:var(--radius-full);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:16px;font-weight:600;flex-shrink:0;overflow:hidden
+}
+.chat-header-avatar img{width:100%;height:100%;object-fit:cover}
+
+.chat-header-info{flex:1;min-width:0}
+.chat-header-name{font-size:16px;font-weight:600;color:var(--text)}
+.chat-header-status{font-size:12px;color:var(--green);display:flex;align-items:center;gap:4px}
+
+.status-indicator{
+    width:8px;height:8px;border-radius:var(--radius-full);display:inline-block
+}
+.status-indicator.online{background:var(--green)}
+.status-indicator.offline{background:var(--text-light)}
+
+.chat-header-more{
+    width:36px;height:36px;border-radius:var(--radius-full);
+    border:none;background:transparent;color:var(--text-secondary);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-size:18px;transition:var(--transition);flex-shrink:0
+}
+.chat-header-more:hover{background:var(--surface-hover);color:var(--text)}
+
+/* Messages Area */
+.chat-messages{
+    flex:1;overflow-y:auto;padding:20px 16px;
+    display:flex;flex-direction:column;gap:8px;
+    background:var(--bg)
+}
+
+.message{
+    max-width:75%;display:flex;flex-direction:column;
+    animation:msgIn 0.2s ease;position:relative
+}
+.message.sent{align-self:flex-end;align-items:flex-end}
+.message.received{align-self:flex-start;align-items:flex-start}
+
+.message-bubble{
+    padding:8px 14px;border-radius:var(--radius-sm);
+    font-size:14px;line-height:1.5;word-break:break-word;white-space:pre-wrap
+}
+.message.sent .message-bubble{
+    background:var(--green);color:#fff;
+    border-bottom-right-radius:4px
+}
+.message.received .message-bubble{
+    background:var(--surface);color:var(--text);
+    border-bottom-left-radius:4px;box-shadow:var(--shadow-sm)
+}
+
+.message.sent .message-bubble-wrap .message-bubble{background:var(--green);color:#fff}
+.message.received .message-bubble-wrap .message-bubble{background:var(--surface);color:var(--text)}
+
+.message-time{font-size:11px;color:var(--text-light);padding:0 4px;margin-top:2px}
+.message.sent .message-time{color:rgba(0,0,0,0.45)}
+
+.message-bubble-wrap{position:relative}
+
+/* Message hover actions */
+.message-actions{
+    display:none;position:absolute;top:-10px;
+    gap:2px;z-index:5
+}
+.message.sent .message-actions{right:-6px;left:auto}
+.message.received .message-actions{left:-6px;right:auto}
+.message:hover .message-actions{display:flex}
+
+.message-action-btn{
+    width:28px;height:28px;border-radius:var(--radius-full);
+    border:1px solid var(--border);background:var(--surface);
+    color:var(--text-secondary);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;transition:var(--transition);
+    box-shadow:var(--shadow-sm)
+}
+.message-action-btn:hover{background:var(--surface-hover);color:var(--primary)}
+.message-action-btn.delete:hover{color:var(--red);border-color:var(--red);background:#fef2f2}
+
+.message-footer{display:flex;align-items:center;gap:4px}
+.message.sent .message-footer{justify-content:flex-end}
+.message.received .message-footer{justify-content:flex-start}
+
+.read-receipt{font-size:11px}
+.read-receipt.sent{color:var(--text-light)}
+.read-receipt.delivered{color:var(--text-light)}
+.read-receipt.read{color:var(--blue)}
+
+/* ASL message styling */
+.asl-message-bubble{
+    width:fit-content;max-width:320px;padding:6px 12px;line-height:1
+}
+.asl-symbols-row{display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+.asl-symbol{
+    width:34px;height:34px;background:var(--surface);
+    border-radius:6px;display:flex;align-items:center;
+    justify-content:center;border:1px solid var(--border);
+    box-shadow:var(--shadow-sm)
+}
+.message.sent .asl-symbol{background:#fff}
+.asl-symbol-space{width:16px;height:34px}
+.asl-symbol-msg-img{width:26px;height:26px;object-fit:contain}
+.asl-symbol-text{
+    font-size:15px;font-weight:700;color:var(--text);
+    display:flex;align-items:center;justify-content:center;
+    width:34px;height:34px
+}
+.asl-translation{font-style:italic;color:var(--text-secondary);font-size:11px;margin-top:4px;display:block}
+
+/* Gesture card in messages */
+.asl-sign-card{border-radius:var(--radius-md);overflow:hidden;max-width:260px}
+.asl-sign-card .sign-emoji{font-size:56px;line-height:1;display:block;text-align:center;padding:12px}
+
+/* ========================================================================
+   10. CHAT INPUT AREA
+   ======================================================================== */
+.chat-input{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 16px;background:var(--surface);
+    border-top:1px solid var(--border);flex-shrink:0
+}
+
+.chat-input-tools{display:flex;align-items:center;gap:2px;flex-shrink:0}
+
+.chat-tool-btn{
+    width:40px;height:40px;border-radius:var(--radius-full);
+    border:none;background:transparent;color:var(--text-secondary);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-size:18px;transition:var(--transition);flex-shrink:0
+}
+.chat-tool-btn:hover{background:var(--surface-hover);color:var(--text)}
+.chat-tool-btn.active{color:var(--accent);background:rgba(245,158,11,0.12)}
+
+.chat-input-field-wrap{
+    flex:1;display:flex;align-items:center;
+    background:var(--bg);border-radius:var(--radius-sm);
+    padding:0 12px;min-height:42px;gap:6px;flex-wrap:wrap
+}
+
+.chat-input-field{
+    flex:1;border:none;background:transparent;
+    padding:8px 0;font-size:14px;outline:none;
+    font-family:inherit;color:var(--text);min-width:60px
+}
+.chat-input-field::placeholder{color:var(--text-light)}
+
+.chat-send-btn{
+    width:42px;height:42px;border-radius:var(--radius-full);
+    border:none;background:var(--green);color:#fff;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-size:16px;transition:var(--transition);flex-shrink:0
+}
+.chat-send-btn:hover{background:var(--green-dark);transform:scale(1.05)}
+
+/* ASL Symbol Chips */
+.asl-chips{
+    display:flex;gap:4px;padding:4px 0;flex-wrap:wrap;align-items:center;width:100%
+}
+.asl-chip{
+    display:inline-flex;align-items:center;gap:3px;
+    padding:4px 6px;background:rgba(245,158,11,0.15);
+    border-radius:6px;font-size:13px;font-weight:600;
+    cursor:pointer;flex-shrink:0;border:1px solid rgba(245,158,11,0.25)
+}
+.asl-chip:hover{background:rgba(245,158,11,0.25)}
+.asl-chip img{width:22px;height:22px;object-fit:contain}
+.asl-chip-text{padding:2px 4px;min-width:18px;text-align:center}
+.asl-chip-remove{font-size:12px;color:var(--text-light);margin-left:2px;font-weight:700}
+.asl-chip:hover .asl-chip-remove{color:var(--red)}
+
+/* ========================================================================
+   11. ASL SYMBOL KEYBOARD — Full QWERTY Layout
+   ======================================================================== */
+.asl-keyboard{
+    background:var(--surface);border-top:1px solid var(--border);
+    padding:8px 8px 12px;display:none;flex-shrink:0;
+    animation:slideUp 0.25s ease;overflow:hidden
+}
+.asl-keyboard.show{display:block}
+
+.asl-keyboard-header{
+    display:flex;justify-content:space-between;
+    align-items:center;margin-bottom:6px;padding:0 4px
+}
+.asl-keyboard-title{
+    font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;
+    color:var(--text-secondary)
+}
+
+.asl-keyboard-actions-top{display:flex;gap:4px}
+
+.asl-kb-btn-sm{
+    width:30px;height:30px;border-radius:var(--radius-sm);
+    border:none;background:var(--surface-hover);color:var(--text-secondary);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-size:12px;transition:var(--transition)
+}
+.asl-kb-btn-sm:hover{background:var(--border);color:var(--text)}
+.asl-kb-close{color:var(--text-light)}
+.asl-kb-close:hover{color:var(--red);background:#fef2f2}
+
+/* Compose preview area */
+.asl-keyboard-compose{
+    background:var(--bg);border-radius:var(--radius-sm);
+    margin:0 4px 8px;padding:6px 8px;min-height:38px;
+    max-height:76px;overflow-y:auto;
+    border:1px solid var(--border)
+}
+
+.asl-keyboard-compose .asl-chips{
+    display:flex;gap:3px;flex-wrap:wrap;align-items:center;width:100%;padding:0
+}
+
+/* Keyboard rows container */
+.asl-keyboard-rows{
+    display:flex;flex-direction:column;gap:5px;
+    padding:0 2px
+}
+
+/* Individual row */
+.asl-keyboard-row{
+    display:flex;gap:4px;justify-content:center;align-items:stretch
+}
+
+/* ===== Key styles ===== */
+.asl-key{
+    flex:1;max-width:52px;min-width:28px;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-sm);cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;
+    justify-content:center;padding:3px 2px;
+    transition:all 0.12s ease;
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;-webkit-user-select:none;
+    position:relative;overflow:hidden
+}
+.asl-key:active{
+    transform:scale(0.92);
+    background:var(--primary-light);
+    border-color:var(--primary);
+    box-shadow:0 0 8px rgba(124,58,237,0.25)
+}
+.asl-key:hover{
+    background:var(--surface-hover);
+    border-color:var(--text-light);
+    z-index:1
+}
+
+/* Key with ASL image */
+.asl-key-img{
+    width:100%;height:auto;max-height:28px;
+    object-fit:contain;flex-shrink:0
+}
+.asl-key-label{
+    font-size:9px;font-weight:700;color:var(--text);
+    line-height:1.2;margin-top:1px;text-align:center;
+    letter-spacing:0.3px
+}
+
+/* Text-only keys (symbols) */
+.asl-key-textonly{
+    justify-content:center
+}
+.asl-key-symbol{
+    font-size:16px;font-weight:600;color:var(--text);
+    line-height:1
+}
+
+/* No-image key (letter without available image) */
+.asl-key-noimg{
+    justify-content:center
+}
+.asl-key-noimg .asl-key-label{
+    font-size:14px;font-weight:700
+}
+
+/* ===== Action keys ===== */
+.asl-key-action{
+    flex:0 0 auto;min-width:44px;max-width:56px;
+    background:var(--bg);border-color:var(--border);
+    flex-direction:column;gap:1px;padding:4px 2px
+}
+.asl-key-action i{
+    font-size:16px;color:var(--text-secondary)
+}
+.asl-key-action-label{
+    font-size:9px;font-weight:600;color:var(--text-secondary);
+    text-align:center;line-height:1.1
+}
+
+.asl-key-space{
+    flex:3;min-width:80px;max-width:200px;
+    background:var(--bg);flex-direction:row;gap:6px;
+    padding:4px 16px
+}
+.asl-key-space i{
+    font-size:14px;color:var(--text-secondary)
+}
+.asl-key-space .asl-key-action-label{
+    font-size:11px
+}
+
+.asl-key-enter{
+    background:rgba(37,211,102,0.1);
+    border-color:var(--green)
+}
+.asl-key-enter i{
+    color:var(--green);
+    font-size:16px
+}
+.asl-key-enter .asl-key-action-label{
+    color:var(--green);
+    font-weight:700
+}
+
+.asl-key-clear{
+    background:rgba(239,68,68,0.06);
+    border-color:rgba(239,68,68,0.2)
+}
+.asl-key-clear i{color:var(--red);font-size:14px}
+.asl-key-clear .asl-key-action-label{color:var(--red)}
+
+.asl-key-backspace{
+    background:var(--bg)
+}
+
+/* Animation for keys */
+.asl-key::after{
+    content:'';position:absolute;inset:0;
+    background:var(--primary);border-radius:inherit;
+    opacity:0;transition:opacity 0.2s;
+    pointer-events:none
+}
+.asl-key:active::after{
+    opacity:0.08
+}
+
+/* Ripple effect */
+.asl-key .ripple{
+    position:absolute;border-radius:50%;
+    background:var(--primary);transform:scale(0);
+    animation:ripple 0.5s ease-out;pointer-events:none
+}
+
+/* ========================================================================
+   12. ASL SIGN SELECTOR
+   ======================================================================== */
+.asl-sign-selector{
+    background:var(--surface);border-top:1px solid var(--border);
+    padding:12px 16px 16px;display:none;flex-shrink:0;
+    max-height:320px;overflow-y:auto;animation:slideUp 0.25s ease
+}
+.asl-sign-selector.show{display:block}
+
+.asl-sign-selector-header{
+    display:flex;justify-content:space-between;
+    align-items:center;margin-bottom:10px
+}
+
+.asl-categories{
+    display:flex;gap:6px;margin-bottom:12px;
+    overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch
+}
+.asl-categories::-webkit-scrollbar{height:2px}
+
+.asl-category{
+    padding:7px 16px;border-radius:20px;
+    border:1px solid var(--border);background:var(--surface);
+    cursor:pointer;font-size:12px;font-weight:500;
+    white-space:nowrap;font-family:inherit;
+    transition:var(--transition);color:var(--text-secondary);flex-shrink:0
+}
+.asl-category:hover{border-color:var(--text-light);color:var(--text)}
+.asl-category.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.asl-signs-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+    gap:10px
+}
+
+.asl-sign-item{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-md);padding:12px 8px;text-align:center;
+    cursor:pointer;transition:var(--transition)
+}
+.asl-sign-item:hover{
+    border-color:var(--primary-light);
+    box-shadow:var(--shadow-md);transform:translateY(-2px)
+}
+.asl-sign-item:active{transform:translateY(0)}
+.asl-sign-item .sign-emoji{font-size:36px;line-height:1;margin-bottom:8px;display:block}
+.asl-sign-item .sign-label{font-size:12px;font-weight:600;color:var(--text)}
+
+.asl-sign-item img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:6px;background:var(--bg)}
+.asl-sign-item video{width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:6px;background:var(--bg)}
+
+/* ========================================================================
+   13. OVERLAY PANEL
+   ======================================================================== */
+.panel-overlay{
+    display:none;flex:1;flex-direction:column;
+    overflow-y:auto;padding:32px;background:var(--surface);min-width:0
+}
+.panel-overlay.active{display:flex}
+
+.content-active .panel-chatlist,
+.content-active .panel-chat{display:none!important}
+
+/* Reusable components for overlay pages */
+.card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);padding:24px;margin-bottom:16px
+}
+.card-title{
+    font-size:17px;font-weight:700;margin-bottom:16px;
+    display:flex;align-items:center;gap:8px
+}
+
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text-secondary)}
+.form-input,.form-textarea{
+    width:100%;padding:10px 14px;border:2px solid var(--border);
+    border-radius:var(--radius-sm);font-size:14px;outline:none;
+    font-family:inherit;transition:var(--transition);background:var(--bg)
+}
+.form-input:focus,.form-textarea:focus{border-color:var(--primary);background:var(--surface)}
+.form-textarea{resize:vertical;min-height:80px}
+select.form-input{cursor:pointer}
+
+.btn{
+    padding:10px 22px;border-radius:var(--radius-sm);
+    border:none;font-size:13px;font-weight:600;
+    cursor:pointer;display:inline-flex;align-items:center;
+    gap:6px;transition:var(--transition);font-family:inherit
+}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.btn-outline{background:var(--surface);border:2px solid var(--border);color:var(--text-secondary)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-accent:hover{background:#e67e00;transform:translateY(-1px)}
+.btn-red{background:var(--surface);border:2px solid var(--red);color:var(--red)}
+.btn-red:hover{background:#fef2f2}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-icon{
+    width:36px;height:36px;border-radius:var(--radius-sm);
+    border:1px solid var(--border);background:var(--surface);
+    color:var(--text-secondary);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;transition:var(--transition)
+}
+.btn-icon:hover{background:var(--surface-hover);color:var(--primary)}
+
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tab{
+    padding:7px 16px;border-radius:20px;
+    font-size:13px;font-weight:500;cursor:pointer;
+    border:1px solid var(--border);background:transparent;
+    color:var(--text-secondary);transition:var(--transition);font-family:inherit
+}
+.tab:hover{border-color:var(--text-light);color:var(--text)}
+.tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.search-box{display:flex;gap:8px;margin-bottom:16px;max-width:480px}
+.search-box .form-input{flex:1}
+
+.page-overlay-header{
+    display:flex;align-items:center;gap:12px;margin-bottom:24px
+}
+.page-overlay-back{
+    width:36px;height:36px;border-radius:var(--radius-sm);
+    border:1px solid var(--border);background:var(--surface);
+    color:var(--text-secondary);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;transition:var(--transition);flex-shrink:0
+}
+.page-overlay-back:hover{border-color:var(--primary);color:var(--primary)}
+.page-overlay-title{font-size:22px;font-weight:700}
+
+/* ========================================================================
+   14. HELP & SUPPORT
+   ======================================================================== */
+.help-video-recorder{
+    border:2px dashed var(--border);border-radius:var(--radius-md);
+    padding:16px;text-align:center;background:var(--bg)
+}
+.help-camera-preview,.help-video-preview{
+    width:100%;max-height:200px;border-radius:var(--radius-sm);
+    background:#000;margin-bottom:12px
+}
+.help-recorder-controls,.help-recorder-actions{
+    display:flex;gap:10px;justify-content:center;margin-bottom:8px
+}
+.help-ticket-item{
+    border:1px solid var(--border);border-radius:var(--radius-md);
+    padding:16px;margin-bottom:12px;background:var(--bg)
+}
+.help-ticket-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.help-ticket-badge{
+    font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;
+    border:1px solid;letter-spacing:0.3px
+}
+.help-ticket-video-box{
+    border:1px solid var(--border);border-radius:var(--radius-sm);
+    overflow:hidden;margin-top:8px
+}
+.help-ticket-video-header{
+    font-size:11px;font-weight:600;padding:6px 10px;
+    background:var(--bg);color:var(--text-secondary);
+    display:flex;align-items:center;gap:6px
+}
+.help-ticket-admin-text{
+    margin-top:8px;padding:12px;background:rgba(124,58,237,0.08);
+    border-radius:var(--radius-sm);font-size:13px
+}
+.help-ticket-admin-text strong{font-size:12px;color:var(--primary);display:block;margin-bottom:4px}
+.help-ticket-admin-text p{color:var(--text);margin:0}
+.help-ticket-admin-video{
+    border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-top:8px
+}
+
+/* ========================================================================
+   15. NOTIFICATIONS PAGE
+   ======================================================================== */
+#notifications-list{display:flex;flex-direction:column;gap:8px;max-width:640px}
+.notification-item{
+    display:flex;align-items:flex-start;gap:12px;
+    padding:14px 16px;background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--radius-md);
+    transition:var(--transition);position:relative;cursor:pointer
+}
+.notification-item:hover{border-color:var(--primary-light)}
+.notification-item.unread{background:var(--bg);border-color:var(--primary-light)}
+.notification-item.unread::before{
+    content:'';position:absolute;left:0;top:8px;bottom:8px;
+    width:3px;background:var(--primary);border-radius:0 2px 2px 0
+}
+.notification-icon{
+    width:40px;height:40px;border-radius:var(--radius-full);
+    background:var(--bg);display:flex;align-items:center;
+    justify-content:center;font-size:17px;flex-shrink:0
+}
+.notification-content{flex:1;min-width:0}
+.notification-title{font-size:14px;font-weight:600;margin-bottom:2px}
+.notification-message{font-size:13px;color:var(--text-secondary);line-height:1.4}
+.notification-time{font-size:11px;color:var(--text-light);margin-top:4px}
+.notification-dot{
+    width:10px;height:10px;border-radius:var(--radius-full);
+    background:var(--primary);flex-shrink:0;margin-top:6px
+}
+.notification-search-box{display:flex;gap:8px;margin-bottom:16px;max-width:480px}
+.notification-search-box input{flex:1}
+.notification-filter-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;max-width:480px}
+.notification-filter-tab{
+    padding:6px 14px;border-radius:20px;border:1px solid var(--border);
+    background:var(--surface);font-size:12px;font-weight:500;
+    cursor:pointer;transition:var(--transition);color:var(--text-secondary);font-family:inherit
+}
+.notification-filter-tab:hover{border-color:var(--primary);color:var(--primary)}
+.notification-filter-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.notification-item .notification-delete-btn{
+    opacity:0;transition:var(--transition);position:absolute;
+    top:8px;right:8px;width:26px;height:26px;border-radius:6px;
+    border:none;background:transparent;color:var(--text-light);
+    cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center
+}
+.notification-item:hover .notification-delete-btn{opacity:1}
+.notification-item .notification-delete-btn:hover{color:var(--red);background:#fef2f2}
+.notification-page-actions{display:flex;gap:8px;margin-left:auto}
+.notification-page-actions .btn{font-size:11px;padding:6px 12px}
+
+/* -- Dropdown Notification Items -- */
+.notification-dropdown-item{
+    display:flex;align-items:flex-start;gap:12px;
+    padding:12px 20px;cursor:pointer;transition:all 0.15s ease;position:relative
+}
+.notification-dropdown-item:hover{background:var(--surface-hover)}
+.notification-dropdown-item.unread{background:var(--bg)}
+.notification-dropdown-item.unread::before{
+    content:'';position:absolute;left:0;top:0;bottom:0;
+    width:3px;background:var(--accent);border-radius:0 2px 2px 0
+}
+.notification-dropdown-icon{
+    width:36px;height:36px;border-radius:var(--radius-full);
+    background:var(--bg);display:flex;align-items:center;
+    justify-content:center;font-size:15px;flex-shrink:0
+}
+.notification-dropdown-content{flex:1;min-width:0}
+.notification-dropdown-title-text{
+    font-size:13px;font-weight:600;color:var(--text);
+    margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.notification-dropdown-message{
+    font-size:12px;color:var(--text-secondary);line-height:1.3;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden
+}
+.notification-dropdown-time{font-size:11px;color:var(--text-light);margin-top:3px}
+.notification-dropdown-item-actions{
+    display:flex;gap:4px;flex-shrink:0;opacity:0;transition:opacity 0.15s
+}
+.notification-dropdown-item:hover .notification-dropdown-item-actions{opacity:1}
+.notification-dropdown-item-btn{
+    width:26px;height:26px;border-radius:6px;border:none;
+    background:transparent;color:var(--text-light);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;transition:all 0.15s
+}
+.notification-dropdown-item-btn:hover{background:var(--surface-hover);color:var(--accent)}
+.notification-dropdown-item-btn.delete:hover{color:var(--red);background:#fef2f2}
+
+/* ========================================================================
+   16. TOAST & MODAL
+   ======================================================================== */
+.toast{
+    position:fixed;top:24px;right:24px;
+    background:var(--surface);border-radius:var(--radius-md);
+    padding:14px 20px;box-shadow:var(--shadow-lg);
+    display:none;align-items:center;gap:10px;
+    z-index:9999;border-left:4px solid var(--green);
+    animation:slideDown 0.3s ease;font-size:14px;font-weight:500
+}
+.toast.show{display:flex}
+.toast.error{border-left-color:var(--red)}
+
+.modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,0.5);
+    display:none;align-items:center;justify-content:center;
+    z-index:9998;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)
+}
+.modal-overlay.show{display:flex}
+.modal-body{
+    background:var(--surface);border-radius:var(--radius-lg);
+    padding:32px 24px 24px;max-width:360px;width:100%;
+    text-align:center;box-shadow:var(--shadow-lg);
+    animation:fadeIn 0.3s ease
+}
+.modal-icon{
+    width:64px;height:64px;border-radius:var(--radius-full);
+    background:rgba(245,158,11,0.12);
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 16px;font-size:28px;color:var(--accent)
+}
+.modal-heading{font-size:20px;font-weight:700;margin-bottom:8px}
+.modal-text{font-size:14px;color:var(--text-secondary);line-height:1.5;margin-bottom:20px}
+
+/* ========================================================================
+   17. FRIENDS PAGE OVERRIDES
+   ======================================================================== */
+.friend-search-results{display:flex;flex-direction:column;gap:6px;max-width:480px}
+.friend-search-item{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 14px;border:1px solid var(--border);
+    border-radius:var(--radius-sm);background:var(--surface)
+}
+.friend-search-avatar{
+    width:36px;height:36px;border-radius:var(--radius-full);
+    background:var(--primary);display:flex;align-items:center;
+    justify-content:center;color:#fff;font-size:14px;font-weight:600;flex-shrink:0
+}
+.friend-search-info{flex:1;min-width:0}
+.friend-search-name{font-size:14px;font-weight:600}
+.friend-search-email{font-size:12px;color:var(--text-secondary)}
+
+/* ========================================================================
+   18. RESPONSIVE — DESKTOP (sidebar always visible)
+   ======================================================================== */
+@media (min-width:1025px){
+    .sidebar{transform:translateX(0);position:relative;z-index:1}
+    .sidebar-overlay{display:none!important}
+    .app-topbar{display:none!important}
+    .app{flex-direction:row}
+    .main-content{margin:0}
+}
+
+/* ========================================================================
+   19. RESPONSIVE — TABLET (1024px and below)
+   ======================================================================== */
+@media (max-width:1024px){
+    .app-topbar{display:flex}
+    .app{flex-direction:column}
+    .main-content{height:calc(100dvh - var(--topbar-height))}
+    .panel-chatlist{min-width:280px;width:35%}
+    .sidebar{box-shadow:4px 0 24px rgba(0,0,0,0.15)}
+    .panel-overlay{padding:24px}
+}
+
+/* ========================================================================
+   20. RESPONSIVE — MOBILE (768px and below)
+   ======================================================================== */
+@media (max-width:768px){
+    .app-topbar{padding:0 8px}
+    .topbar-title{font-size:15px}
+    .topbar-hamburger{display:flex}
+
+    .panel-chatlist{
+        width:100%;min-width:0;max-width:none;
+        border-right:none;height:100%
+    }
+
+    .panel-chat{
+        display:none;width:100%;height:100%;
+        position:absolute;top:0;left:0;z-index:10;
+        background:var(--bg)
+    }
+    .panel-chat.show{display:flex}
+
+    .chat-back-btn{display:flex}
+    .chat-header{padding:10px 12px}
+    .chat-messages{padding:12px}
+    .chat-input{padding:8px 10px;gap:6px}
+    .chat-tool-btn{width:36px;height:36px;font-size:16px}
+    .chat-input-field-wrap{padding:0 10px;min-height:38px}
+    .chat-send-btn{width:38px;height:38px;font-size:15px}
+
+    .conversation-item{padding:10px 14px}
+    .conversation-avatar{width:44px;height:44px;font-size:16px}
+    .conversation-name{font-size:14px}
+    .conversation-preview{font-size:11px}
+    .conversation-time{font-size:10px}
+    .conversation-unread{min-width:18px;height:18px;font-size:10px}
+
+    .chatlist-header{padding:12px 14px 6px}
+    .chatlist-search-input{padding:9px 12px 9px 36px;font-size:12px}
+    .chatlist-tab{padding:6px 10px;font-size:11px}
+
+    .asl-keyboard{padding:6px 4px 10px}
+    .asl-keyboard-row{gap:3px}
+    .asl-key{min-width:24px;max-width:46px;padding:2px 1px}
+    .asl-key-img{max-height:22px}
+    .asl-key-label{font-size:8px}
+    .asl-key-symbol{font-size:14px}
+    .asl-key-action{min-width:36px;max-width:46px}
+    .asl-key-action i{font-size:14px}
+    .asl-key-space{min-width:60px;max-width:140px;padding:4px 10px}
+    .asl-key-enter i{font-size:14px}
+    .asl-keyboard-compose{min-height:32px;padding:4px 6px;margin:0 2px 6px}
+    .asl-sign-selector{padding:10px 12px 14px;max-height:260px}
+    .asl-signs-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+    .asl-sign-item{padding:10px 6px}
+    .asl-sign-item .sign-emoji{font-size:28px}
+
+    .notif-dropdown{width:calc(100vw - 16px);right:-4px;top:44px}
+    .notification-bell-wrapper{top:10px;right:10px}
+
+    .panel-overlay{padding:20px}
+    .page-overlay-title{font-size:20px}
+    .card{padding:18px}
+
+    .message{max-width:85%}
+    .message-bubble{padding:7px 12px;font-size:13px;border-radius:10px}
+}
+
+/* ========================================================================
+   21. RESPONSIVE — SMALL MOBILE (480px and below)
+   ======================================================================== */
+@media (max-width:480px){
+    .panel-chatlist{min-width:0}
+    .chatlist-header{padding:10px 12px 6px}
+    .chatlist-search-input{padding:8px 10px 8px 34px;font-size:11px}
+    .chatlist-search-icon{font-size:12px;left:11px}
+    .chatlist-tab{padding:5px 8px;font-size:10px}
+    .chatlist-tabs{gap:2px}
+
+    .conversation-item{padding:8px 12px;gap:10px}
+    .conversation-avatar{width:40px;height:40px;font-size:14px}
+    .conversation-name{font-size:13px}
+    .conversation-preview{font-size:11px}
+    .conversation-meta{gap:2px}
+
+    .chat-header{padding:8px 10px;gap:10px}
+    .chat-header-avatar{width:36px;height:36px;font-size:14px}
+    .chat-header-name{font-size:14px}
+    .chat-header-status{font-size:11px}
+    .chat-messages{padding:8px}
+    .message{max-width:88%}
+    .message-bubble{padding:7px 10px;font-size:12px}
+    .message-time{font-size:10px}
+
+    .chat-input{padding:6px 8px;gap:4px}
+    .chat-tool-btn{width:32px;height:32px;font-size:15px}
+    .chat-input-field-wrap{padding:0 8px;min-height:36px}
+    .chat-input-field{font-size:13px;padding:6px 0}
+    .chat-send-btn{width:36px;height:36px;font-size:14px}
+
+    .asl-keyboard{padding:4px 2px 8px}
+    .asl-keyboard-title{font-size:12px}
+    .asl-keyboard-row{gap:2px}
+    .asl-key{min-width:20px;max-width:40px;padding:2px 1px}
+    .asl-key-img{max-height:18px}
+    .asl-key-label{font-size:7px}
+    .asl-key-symbol{font-size:12px}
+    .asl-key-action{min-width:30px;max-width:40px;padding:3px 1px}
+    .asl-key-action i{font-size:12px}
+    .asl-key-action-label{font-size:7px}
+    .asl-key-space{min-width:48px;max-width:100px;padding:3px 8px}
+    .asl-key-space .asl-key-action-label{font-size:9px}
+    .asl-key-enter i{font-size:12px}
+    .asl-keyboard-compose{min-height:28px;padding:3px 5px;margin:0 2px 4px;max-height:56px}
+
+    .asl-sign-selector{padding:8px 8px 12px;max-height:220px}
+    .asl-category{padding:5px 12px;font-size:11px}
+    .asl-signs-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px}
+    .asl-sign-item{padding:8px 4px}
+    .asl-sign-item .sign-emoji{font-size:24px}
+    .asl-sign-item .sign-label{font-size:11px}
+    .asl-sign-item img,.asl-sign-item video{aspect-ratio:1}
+
+    .panel-overlay{padding:16px}
+    .page-overlay-title{font-size:18px}
+    .page-overlay-back{width:32px;height:32px;font-size:12px}
+    .card{padding:14px;border-radius:var(--radius-md)}
+    .card-title{font-size:15px}
+
+    .toast{top:12px;right:12px;left:12px;padding:12px 16px;font-size:13px}
+    .modal-body{padding:24px 20px 20px}
+    .modal-heading{font-size:18px}
+
+    .notification-item{padding:12px}
+    .notif-dropdown{width:calc(100vw - 12px)}
+}
+
+/* ========================================================================
+   22. ACCESSIBILITY & UTILITY
+   ======================================================================== */
+@media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+}
+
+.sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0
+}
+
+button:focus-visible,.btn:focus-visible,.chatlist-tab:focus-visible,
+.sidebar-nav-item:focus-visible,.asl-key:focus-visible,
+.chat-tool-btn:focus-visible,.asl-category:focus-visible{
+    outline:2px solid var(--primary);outline-offset:2px
+}

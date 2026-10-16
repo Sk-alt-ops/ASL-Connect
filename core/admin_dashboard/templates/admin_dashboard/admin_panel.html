@@ -1,0 +1,849 @@
+<!-- ============================================================
+  ASL Connect — Admin Panel Template (Redesigned)
+  ============================================================
+  Full admin dashboard with sidebar navigation, topbar, content panels
+  for dashboard stats, users, gestures, alphabet, contact messages,
+  support tickets, notifications, settings, profile, and design studio.
+  ============================================================ -->
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASL Connect — Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&#038;display=swap" rel="stylesheet">
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css"></noscript>
+  <link rel="stylesheet" href="{% static 'admin_dashboard/css/style.css' %}">
+</head>
+<body>
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="toast-container" id="toastContainer"></div>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon"><i class="ti ti-hand-stop" style="font-size:18px"></i></div>
+    <div class="sidebar-logo-text"><strong>ASL Connect</strong><span>Sign Language Platform</span></div>
+  </div>
+  <div class="sidebar-user">
+    <div class="avatar">a</div>
+    <div class="user-info">
+      <strong>admin</strong>
+      <div class="user-info-row">
+        <span class="badge badge-admin"><i class="ti ti-shield-check" style="font-size:8px"></i>ADMIN</span>
+        <a class="view-profile" onclick="showPage('profile')">View Profile</a>
+      </div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Administration</div>
+    <a class="nav-item active" onclick="showPage('dashboard')"><span class="nav-icon"><i class="ti ti-layout-dashboard"></i></span>Dashboard</a>
+    <a class="nav-item" onclick="showPage('users')"><span class="nav-icon"><i class="ti ti-users"></i></span>Users</a>
+    <a class="nav-item" onclick="showPage('gestures')"><span class="nav-icon"><i class="ti ti-hand-stop"></i></span>Gestures</a>
+    <a class="nav-item" onclick="showPage('alphabet')"><span class="nav-icon"><i class="ti ti-text-size"></i></span>Alphabet</a>
+    <a class="nav-item" onclick="showPage('contact-admin')"><span class="nav-icon"><i class="ti ti-mail"></i></span>Contact<span class="nav-badge" id="admin-contact-badge" style="display:none">0</span></a>
+    <a class="nav-item" onclick="showPage('support')"><span class="nav-icon"><i class="ti ti-headset"></i></span>Support</a>
+    <div class="nav-label" style="margin-top:6px">General</div>
+    <a class="nav-item" onclick="showPage('design')"><span class="nav-icon"><i class="ti ti-palette"></i></span>Design Studio</a>
+    <a class="nav-item" onclick="showPage('notifications')"><span class="nav-icon"><i class="ti ti-bell"></i></span>Notifications<span class="nav-badge" style="display:none">0</span></a>
+    <a class="nav-item" onclick="showPage('settings')"><span class="nav-icon"><i class="ti ti-settings"></i></span>Settings</a>
+    <a class="nav-item" onclick="showPage('profile')"><span class="nav-icon"><i class="ti ti-user-circle"></i></span>My Profile</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar"><i class="ti ti-chevron-left"></i></div>
+    <div class="signout" onclick="signOut()"><span class="nav-icon"><i class="ti ti-logout"></i></span>Sign Out</div>
+  </div>
+</aside>
+<div class="main" id="mainContent">
+  <header class="topbar" id="main-topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="openSidebar()"><i class="ti ti-menu-2"></i></button>
+      <div class="topbar-title">
+        <h1 id="topbar-title">Dashboard</h1>
+        <p id="topbar-sub">Manage your ASL Connect platform</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn-icon notif-dot" title="Notifications" onclick="showPage('notifications')"><i class="ti ti-bell"></i></button>
+      <button class="btn-icon" title="Search"><i class="ti ti-search"></i></button>
+      <div class="avatar" style="cursor:pointer;width:36px;height:36px;font-size:13px" onclick="showPage('profile')">a</div>
+    </div>
+    <!-- Design Page Navigation (shown only when Design section is active) -->
+    <div class="design-topbar-nav" id="design-topbar-nav">
+      <div class="design-topbar-nav-inner">
+        <div class="design-page-tab active" data-page="landing" data-section="hero" onclick="switchDesignPage('landing')">
+          <i class="ti ti-home"></i> Home
+        </div>
+        <div class="design-page-tab" data-page="landing" data-section="about" onclick="switchDesignPageSection('about')">
+          <i class="ti ti-info-circle"></i> About
+        </div>
+        <div class="design-page-tab" data-page="landing" data-section="how_it_works" onclick="switchDesignPageSection('how_it_works')">
+          <i class="ti ti-hierarchy-2"></i> How It Works
+        </div>
+        <div class="design-page-tab" data-page="landing" data-section="features" onclick="switchDesignPageSection('features')">
+          <i class="ti ti-box"></i> Features
+        </div>
+        <div class="design-page-tab" data-page="landing" data-section="contact" onclick="switchDesignPageSection('contact')">
+          <i class="ti ti-mail"></i> Contact
+        </div>
+        <div class="design-nav-divider"></div>
+        <div class="design-page-tab" data-page="auth" onclick="switchDesignPage('auth')" title="Login & Register Pages">
+          <i class="ti ti-lock"></i> Login
+        </div>
+        <div class="design-page-tab" data-page="auth" onclick="switchDesignPage('auth')">
+          <i class="ti ti-user-plus"></i> Register
+        </div>
+        <div class="design-nav-divider"></div>
+        <div class="design-page-tab" data-page="asl_dashboard" onclick="switchDesignPage('asl_dashboard')">
+          <i class="ti ti-hand-stop"></i> ASL Dashboard
+        </div>
+        <div class="design-page-tab" data-page="normal_dashboard" onclick="switchDesignPage('normal_dashboard')">
+          <i class="ti ti-user"></i> Normal Dashboard
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="content">
+
+    <!-- ================================================================
+         PANEL: Dashboard — Platform statistics, analytics, and activity
+         ================================================================ -->
+    <div class="section-panel active" id="page-dashboard">
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <button class="quick-action-btn qa-primary" onclick="showPage('users')"><i class="ti ti-user-plus"></i>Add User</button>
+          <button class="quick-action-btn qa-green" onclick="showPage('gestures')"><i class="ti ti-hand-stop"></i>Add Gesture</button>
+          <button class="quick-action-btn qa-amber" onclick="showPage('gestures')"><i class="ti ti-tag"></i>Add Category</button>
+          <button class="quick-action-btn qa-red" onclick="showPage('support')"><i class="ti ti-headset"></i>Support Requests</button>
+          <button class="quick-action-btn qa-teal" onclick="showPage('notifications')"><i class="ti ti-bell"></i>Send Notification</button>
+        </div>
+        <!-- Stats -->
+        <div class="stat-grid">
+          <div class="stat-card" style="cursor:pointer" onclick="showUsersPage('all')"><div class="stat-icon si-blue"><i class="ti ti-users"></i></div><div class="stat-info"><strong id="stat-total-users">--</strong><span>Total Users</span><small><i class="ti ti-trending-up"></i>Registered users</small></div></div>
+          <div class="stat-card" style="cursor:pointer" onclick="showUsersPage('asl')"><div class="stat-icon si-amber"><i class="ti ti-hand-stop"></i></div><div class="stat-info"><strong id="stat-asl-users">--</strong><span>ASL Users</span><small><i class="ti ti-trending-up"></i>Sign language users</small></div></div>
+          <div class="stat-card"><div class="stat-icon si-green"><i class="ti ti-file-description"></i></div><div class="stat-info"><strong id="stat-gestures">--</strong><span>ASL Gestures</span><small><i class="ti ti-plus"></i>In library</small></div></div>
+          <div class="stat-card"><div class="stat-icon si-purple"><i class="ti ti-alphabet-latin"></i></div><div class="stat-info"><strong id="stat-symbols">--</strong><span>Alphabet Symbols</span><small style="color:var(--green)"><i class="ti ti-circle-check"></i>Uploaded</small></div></div>
+          <div class="stat-card"><div class="stat-icon si-red"><i class="ti ti-help-circle"></i></div><div class="stat-info"><strong id="stat-open-tickets">--</strong><span>Open Tickets</span><small><i class="ti ti-clock"></i>Open tickets</small></div></div>
+          <div class="stat-card" id="stat-contact"><div class="stat-icon si-teal"><i class="ti ti-mail-opened"></i></div><div class="stat-info"><strong id="stat-contact-count">--</strong><span>Contact Messages</span><small style="color:var(--amber)" id="stat-contact-unread"><i class="ti ti-clock"></i>Loading...</small></div></div>
+        </div>
+        <!-- Charts Row -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div class="chart-card-title"><i class="ti ti-trending-up"></i>User Growth</div>
+              <div class="chart-card-value" id="chart-total-users">--</div>
+            </div>
+            <div class="chart-body" id="user-growth-chart"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div class="chart-card-title"><i class="ti ti-message"></i>Chat Activity</div>
+              <div class="chart-card-value" id="chart-chat-count">--</div>
+            </div>
+            <div class="chart-body" id="chat-activity-chart"></div>
+          </div>
+        </div>
+        <!-- Activity + Support Overview -->
+        <div class="dashboard-two">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-activity" style="background:var(--blue-bg);color:var(--blue)"></i>Recent Activity</div>
+            <div id="recent-activity-container" style="display:flex;flex-direction:column;gap:0">
+              <div style="padding:20px;text-align:center;color:var(--text3);font-size:12px"><i class="ti ti-loader" style="display:block;font-size:20px;margin-bottom:6px;opacity:0.3"></i>Loading activity...</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-chart-donut" style="background:var(--purple-bg);color:var(--purple)"></i>Support Overview</div>
+            <div id="support-overview-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div style="background:var(--amber-bg);border-radius:9px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:var(--amber);letter-spacing:-1px" id="sup-open">--</div><div style="font-size:11px;font-weight:600;color:var(--amber);margin-top:2px">Open</div></div>
+              <div style="background:var(--blue-bg);border-radius:9px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:var(--blue);letter-spacing:-1px" id="sup-in-progress">--</div><div style="font-size:11px;font-weight:600;color:var(--blue);margin-top:2px">In Progress</div></div>
+              <div style="background:var(--green-bg);border-radius:9px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:var(--green);letter-spacing:-1px" id="sup-resolved">--</div><div style="font-size:11px;font-weight:600;color:var(--green);margin-top:2px">Resolved</div></div>
+              <div style="background:var(--amber-bg);border-radius:9px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:var(--amber);letter-spacing:-1px" id="sup-asl">--</div><div style="font-size:11px;font-weight:600;color:var(--amber);margin-top:2px">ASL Requests</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Users Overview -->
+        <div class="card" style="margin-top:14px">
+          <div class="card-title">
+            <i class="ti ti-users" style="background:var(--blue-bg);color:var(--blue)"></i>Users Overview
+            <button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="showPage('users')"><i class="ti ti-arrow-right"></i> View All</button>
+          </div>
+          <div class="search-bar" style="margin-bottom:10px">
+            <input type="text" id="dashboard-users-search-input" placeholder="Search by name, email, or ID..." style="flex:1;max-width:280px" oninput="filterDashboardUsers()">
+            <select id="dashboard-user-filter" onchange="filterDashboardUsers()">
+              <option value="all">All Users</option>
+              <option value="asl">ASL Users</option>
+              <option value="normal">Normal Users</option>
+            </select>
+          </div>
+          <div class="table-wrapper" style="max-height:300px;overflow-y:auto">
+            <table class="users-table">
+              <thead><tr><th>User</th><th>Email</th><th>Type</th><th>Joined</th></tr></thead>
+              <tbody id="dashboard-users-tbody">
+                <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text3)">Loading users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+
+    <!-- ================================================================
+         PANEL: Gestures — Category management + gesture library
+         ================================================================ -->
+    <div class="section-panel" id="page-gestures">
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-title"><i class="ti ti-tag" style="background:var(--blue-bg);color:var(--blue)"></i>Categories</div>
+            <div class="categories-wrap" id="categories-wrap">
+              <span style="color:var(--text3);font-size:12px;padding:6px 0">Loading categories...</span>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Name</label><input type="text" id="cat-name" placeholder="Category name"></div>
+              <div class="form-group"><label>Icon</label><input type="text" id="cat-icon" placeholder="ti ti-hand-stop" value="ti ti-hand-stop"></div>
+              <div class="form-group"><label>Color</label><input type="text" id="cat-color" placeholder="#3b82f6" value="#3b82f6"></div>
+              <button class="btn btn-primary" style="align-self:flex-end" onclick="addCategory()"><i class="ti ti-plus"></i>Add Category</button>
+            </div>
+          </div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-title"><i class="ti ti-cloud-upload" style="background:var(--green-bg);color:var(--green)"></i>Upload ASL Gesture</div>
+          <div class="upload-section">
+            <div>
+              <div class="form-group" style="margin-bottom:10px"><label>Translation</label><input type="text" id="gesture-translation" placeholder="e.g., Hello"></div>
+              <div class="form-group"><label>Category</label><select id="gesture-category-select"><option value="">Select category</option></select></div>
+            </div>
+            <div>
+              <div class="file-drop" style="margin-bottom:10px;cursor:pointer" onclick="document.getElementById('gesture-video').click()">
+                <i class="ti ti-cloud-upload drop-icon"></i>
+                <p>Drag &amp; drop media files<br>or <strong>browse files</strong></p>
+                <p style="font-size:10px;color:var(--text3);margin-top:4px">Images, GIFs &amp; Videos up to 50MB</p>
+                <input type="file" id="gesture-video" accept="image/*,video/*,.gif" style="display:none">
+              </div>
+              <button class="btn btn-green" style="width:100%" id="upload-gesture-btn" onclick="uploadGesture()"><i class="ti ti-upload"></i>Upload Gesture</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-list" style="background:var(--purple-bg);color:var(--purple)"></i>Existing Gestures <span style="font-size:12px;font-weight:600;color:var(--text3);margin-left:4px" id="gesture-count">(0)</span></div>
+          <div class="categories-wrap" id="gesture-filter-wrap" style="margin-bottom:10px"></div>
+          <div class="gesture-grid" id="gesture-grid"></div>
+        </div>
+        <!-- Edit Gesture Modal -->
+        <div class="modal-overlay" id="edit-gesture-modal" style="display:none" onclick="if(event.target===this)closeEditModal()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3><i class="ti ti-edit"></i> Edit Gesture</h3>
+              <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="edit-gesture-id">
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Translation</label>
+                <input type="text" id="edit-gesture-translation" placeholder="e.g., Hello">
+              </div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label>Category</label>
+                <select id="edit-category-select"><option value="">Select category</option></select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+              <button class="btn btn-primary" onclick="saveGestureEdit()"><i class="ti ti-device-floppy"></i> Save Changes</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- ================================================================
+         PANEL: Alphabet — ASL A-Z and 0-9 symbol image management
+         ================================================================ -->
+    <div class="section-panel" id="page-alphabet">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-alphabet-latin" style="background:var(--teal-bg);color:var(--teal)"></i>ASL Alphabet Symbols</div>
+          <p style="font-size:12px;color:var(--text2);font-weight:500">Upload an ASL sign image for each letter and number. Click <strong>Upload</strong> to add a symbol or <strong>Update</strong> to replace an existing one.</p>
+          <div class="alpha-grid" id="alpha-grid"></div>
+        </div>
+    </div>
+
+    <!-- ================================================================
+         PANEL: Users — User list, search, and management
+         ================================================================ -->
+    <div class="section-panel" id="page-users">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-users" style="background:var(--blue-bg);color:var(--blue)"></i>All Users <span style="font-size:12px;font-weight:600;color:var(--text3);margin-left:4px" id="users-count">(--)</span></div>
+          <div class="search-bar">
+            <input type="text" id="users-search-input" placeholder="Search users by name, email, or ID..." style="flex:1;max-width:320px" oninput="filterUsers()">
+            <select id="users-type-filter" onchange="filterUsers()">
+              <option value="all">All Users</option>
+              <option value="asl">ASL Users</option>
+              <option value="normal">Normal Users</option>
+            </select>
+          </div>
+          <div class="table-wrapper">
+            <table class="users-table">
+              <thead><tr><th>User</th><th>Email</th><th>Type</th><th>Joined</th><th>Actions</th></tr></thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+
+    <!-- User View Modal -->
+    <div class="modal-overlay" id="user-view-modal" style="display:none" onclick="if(event.target===this)closeUserViewModal()">
+      <div class="modal-content" style="max-width:460px">
+        <div class="modal-header">
+          <h3><i class="ti ti-user"></i> User Details</h3>
+          <button class="modal-close" onclick="closeUserViewModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="user-view-body">
+          <div style="text-align:center;margin-bottom:18px">
+            <div class="av-lg" id="user-view-avatar" style="width:72px;height:72px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;margin-bottom:8px">A</div>
+            <h3 id="user-view-name" style="font-size:16px;margin:0">--</h3>
+            <span id="user-view-type-badge" class="badge" style="margin-top:4px">--</span>
+          </div>
+          <div style="display:grid;gap:10px">
+            <div class="detail-row"><span class="detail-label">Username</span><span id="user-view-username" class="detail-value">--</span></div>
+            <div class="detail-row"><span class="detail-label">Email</span><span id="user-view-email" class="detail-value">--</span></div>
+            <div class="detail-row"><span class="detail-label">First Name</span><span id="user-view-first-name" class="detail-value">--</span></div>
+            <div class="detail-row"><span class="detail-label">Last Name</span><span id="user-view-last-name" class="detail-value">--</span></div>
+            <div class="detail-row"><span class="detail-label">Status</span><span id="user-view-status" class="detail-value">--</span></div>
+            <div class="detail-row"><span class="detail-label">Joined</span><span id="user-view-joined" class="detail-value">--</span></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeUserViewModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================
+         PANEL: Contact Messages — Incoming form submissions with reply
+         ================================================================ -->
+    <div class="section-panel" id="page-contact-admin">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-inbox" style="background:var(--teal-bg);color:var(--teal)"></i>Contact Messages <span style="font-size:12px;font-weight:600;color:var(--text3);margin-left:4px" id="contact-count">(0)</span>
+            <button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="loadContactMessages()"><i class="ti ti-refresh"></i>Refresh</button>
+          </div>
+          <div class="search-bar" style="margin-bottom:14px">
+            <input type="text" id="contact-search-input" placeholder="Search by name, email, subject, or message..." style="flex:1;max-width:380px" oninput="filterContactMessages()">
+            <select id="contact-status-filter" onchange="filterContactMessages()">
+              <option value="">All Messages</option>
+              <option value="unread">Unread</option>
+              <option value="read">Read</option>
+              <option value="replied">Replied</option>
+            </select>
+          </div>
+          <div id="contact-messages-container">
+            <div class="empty-state" style="padding:36px;text-align:center;color:var(--text3)"><i class="ti ti-inbox" style="font-size:36px;display:block;margin-bottom:10px;opacity:0.3"></i>Loading messages...</div>
+          </div>
+        </div>
+    </div>
+
+    <!-- ================================================================
+         PANEL: Support Tickets — User help requests with text/video reply
+         ================================================================ -->
+    <div class="section-panel" id="page-support">
+        <div class="support-stats">
+          <div class="sup-stat"><div class="sup-stat-icon si-amber"><i class="ti ti-clock"></i></div><div><strong>0</strong><span>Open</span></div></div>
+          <div class="sup-stat"><div class="sup-stat-icon si-blue"><i class="ti ti-loader"></i></div><div><strong>0</strong><span>In Progress</span></div></div>
+          <div class="sup-stat"><div class="sup-stat-icon si-green"><i class="ti ti-circle-check"></i></div><div><strong>0</strong><span>Resolved</span></div></div>
+          <div class="sup-stat"><div class="sup-stat-icon si-amber"><i class="ti ti-hand-stop"></i></div><div><strong>0</strong><span>ASL Requests</span></div></div>
+        </div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-title"><i class="ti ti-headset" style="background:var(--red-bg);color:var(--red)"></i>Support Messages <span style="font-size:12px;font-weight:600;color:var(--text3);margin-left:4px">(0)</span>
+            <button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="loadSupportTickets()"><i class="ti ti-refresh"></i>Refresh</button>
+          </div>
+          <div class="support-tickets-list" style="padding:18px;text-align:center;color:var(--text3);font-size:12px;">Loading support tickets...</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-message-off" style="background:var(--bg);color:var(--text3)"></i>Missing Phrases <span style="font-size:12px;font-weight:600;color:var(--text3);margin-left:4px">(0)</span></div>
+          <div class="empty-state"><i class="ti ti-mood-smile"></i><p>No missing phrases - great job!</p></div>
+        </div>
+    </div>
+
+    <!-- ================================================================
+         PANEL: Contact Us — Contact form for end users
+         ================================================================ -->
+    <div class="section-panel" id="page-contact">
+      <div class="page-header">
+        <h2><div class="page-header-icon" style="background:var(--teal-bg);color:var(--teal)"><i class="ti ti-mail"></i></div>Contact Us</h2>
+        <p>We'd love to hear from you</p>
+      </div>
+      <div class="card" style="max-width:660px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px" class="form-2col">
+          <div class="form-group"><label><i class="ti ti-user" style="font-size:10px"></i> Name</label><input type="text" placeholder="Your name"></div>
+          <div class="form-group"><label><i class="ti ti-mail" style="font-size:10px"></i> Email</label><input type="email" value="admin@asl.com"></div>
+        </div>
+        <div class="form-group" style="margin-bottom:12px"><label><i class="ti ti-tag" style="font-size:10px"></i> Subject</label><input type="text" placeholder="What is this about?"></div>
+        <div class="form-group" style="margin-bottom:16px"><label><i class="ti ti-message" style="font-size:10px"></i> Message</label><textarea placeholder="Tell us more..."></textarea></div>
+        <button class="btn btn-primary"><i class="ti ti-send"></i>Send Message</button>
+      </div>
+    </div>
+
+    <!-- ================================================================
+         PANEL: Notifications — In-app notification list
+         ================================================================ -->
+    <div class="section-panel" id="page-notifications">
+      <div class="page-header">
+        <h2><div class="page-header-icon" style="background:var(--red-bg);color:var(--red)"><i class="ti ti-bell"></i></div>Notifications</h2>
+        <p>Stay updated with your activity</p>
+      </div>
+      <div class="card">
+        <div class="notif-container" style="padding:18px">
+          <div class="notif-empty">
+            <div class="icon-circle"><i class="ti ti-bell-off"></i></div>
+            <h3>No notifications yet</h3>
+            <p>When you get friend requests, messages, or updates, they'll show here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================
+         PANEL: Settings — User preferences, notifications, password
+         ================================================================ -->
+    <div class="section-panel" id="page-settings">
+      <div class="page-header">
+        <h2><div class="page-header-icon" style="background:var(--bg);color:var(--text2)"><i class="ti ti-settings"></i></div>Settings</h2>
+        <p>Customize your ASL Connect experience</p>
+      </div>
+      <div style="max-width:660px">
+        <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,#eef2ff,#f5f0ff);border-color:#c7d7fe">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:40px;height:40px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;box-shadow:0 3px 10px rgba(59,91,219,.25)"><i class="ti ti-user"></i></div>
+            <div><strong style="font-size:14px;color:var(--accent);display:block;font-weight:700">Normal User Settings</strong><p style="font-size:12px;color:var(--text2);margin-top:2px">Text chat, translation, and messaging preferences</p></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="settings-section-title"><span class="si-icon si-red"><i class="ti ti-bell"></i></span>Notifications</div>
+          <div class="toggle-row"><div class="toggle-info"><strong>Push Notifications</strong><span>Receive alerts for messages and requests</span></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+          <div class="toggle-row"><div class="toggle-info"><strong>Sound Effects</strong><span>Play sounds for new messages</span></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+        </div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="settings-section-title"><span class="si-icon si-teal"><i class="ti ti-language"></i></span>Translation</div>
+          <div class="toggle-row"><div class="toggle-info"><strong>Auto-Translate</strong><span>Automatically translate your text to ASL symbols for ASL users</span></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+        </div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="settings-section-title"><span class="si-icon si-green"><i class="ti ti-shield-check"></i></span>Account &amp; Security</div>
+          <div class="toggle-row"><div class="toggle-info"><strong><i class="ti ti-mail" style="font-size:13px;margin-right:4px;color:var(--text3)"></i>Email</strong><span>admin@asl.com</span></div></div>
+          <div class="toggle-row"><div class="toggle-info"><strong><i class="ti ti-user-check" style="font-size:13px;margin-right:4px;color:var(--text3)"></i>Account Type</strong><span>Administrator</span></div><span class="badge badge-admin">Admin</span></div>
+          <div class="toggle-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div class="toggle-info"><strong><i class="ti ti-lock" style="font-size:13px;margin-right:4px;color:var(--text3)"></i>Password</strong><span>Change your account password</span></div>
+            </div>
+            <div style="padding:10px;background:var(--bg);border-radius:7px;display:flex;flex-direction:column;gap:6px;">
+              <input type="password" id="admin-current-password" placeholder="Current password" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;background:var(--bg);color:var(--text);">
+              <input type="password" id="admin-new-password" placeholder="New password" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;background:var(--bg);color:var(--text);">
+              <input type="password" id="admin-confirm-password" placeholder="Confirm new password" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;background:var(--bg);color:var(--text);">
+              <button class="btn btn-primary btn-sm" onclick="handleAdminChangePassword()"><i class="ti ti-key"></i> Update Password</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:14px;border-color:#fecaca">
+          <div class="settings-section-title" style="color:var(--red);border-color:#fecaca"><span style="width:30px;height:30px;border-radius:7px;background:var(--red-bg);display:inline-flex;align-items:center;justify-content:center;font-size:15px;color:var(--red)"><i class="ti ti-alert-triangle"></i></span>Danger Zone</div>
+          <p style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:4px"><i class="ti ti-alert-circle"></i>These actions are irreversible. Please be certain.</p>
+          <div class="danger-box"><div><p style="font-weight:700;font-size:13px;color:var(--text);display:flex;align-items:center;gap:5px"><i class="ti ti-trash" style="color:var(--red)"></i>Delete Account</p><p style="font-size:12px">Permanently delete your account and all data</p></div><button class="btn btn-red btn-sm"><i class="ti ti-trash"></i>Delete</button></div>
+        </div>
+        <div class="save-bar">
+          <button class="btn btn-primary" style="flex:1"><i class="ti ti-device-floppy"></i>Save Settings</button>
+          <button class="btn btn-outline" onclick="showPage('profile')"><i class="ti ti-user"></i>Profile</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================
+         PANEL: Design Studio — Page and section-level design manager
+         ================================================================ -->
+    <div class="section-panel" id="page-design">
+      <div class="page-header">
+        <h2><div class="page-header-icon" style="background:var(--purple-bg);color:var(--purple)"><i class="ti ti-palette"></i></div><span id="design-page-title">Home Page Design Manager</span></h2>
+        <p id="design-page-sub">Customize every section of your Home page — text, colors, fonts, images, and layout</p>
+      </div>
+      <!-- Top Action Bar -->
+      <div class="ds-action-bar">
+        <div class="ds-action-left">
+          <div class="ds-current-page-badge" id="design-status">
+            <i class="ti ti-layout"></i>
+            <span>Editing: <strong id="design-current-page-label">Home (Landing Page)</strong></span>
+          </div>
+          <div class="ds-current-section-badge" id="design-section-badge" style="display:none">
+            <i class="ti ti-section"></i>
+            <span>Section: <strong id="design-current-section-label">Hero Section</strong></span>
+          </div>
+        </div>
+        <div class="ds-action-right">
+          <button class="ds-btn ds-btn-ghost" onclick="refreshDesignPreview()" title="Refresh Preview"><i class="ti ti-refresh"></i></button>
+          <button class="ds-btn ds-btn-ghost" onclick="resetDesignSection()" id="design-reset-btn"><i class="ti ti-history"></i> Reset Section</button>
+          <button class="ds-btn ds-btn-publish" onclick="publishDesignPage()" id="design-publish-btn"><i class="ti ti-circle-check"></i> Publish</button>
+          <button class="ds-btn ds-btn-primary" onclick="saveDesignSection()" id="design-save-btn"><i class="ti ti-device-floppy"></i> Save Changes</button>
+        </div>
+      </div>
+      <!-- Section Editor Layout -->
+      <div class="ds-editor-layout">
+        <!-- Left: Section sidebar with settings -->
+        <div class="ds-editor-sidebar" id="section-editor-sidebar">
+          <!-- Section Labels Tabs -->
+          <div class="ds-section-tabs" id="ds-section-tabs">
+            <button class="ds-section-tab active" data-section="hero" onclick="switchDesignSection('hero')">
+              <i class="ti ti-slideshow"></i> Hero
+            </button>
+            <button class="ds-section-tab" data-section="how_it_works" onclick="switchDesignSection('how_it_works')">
+              <i class="ti ti-hierarchy-2"></i> How It Works
+            </button>
+            <button class="ds-section-tab" data-section="features" onclick="switchDesignSection('features')">
+              <i class="ti ti-box"></i> Features
+            </button>
+            <button class="ds-section-tab" data-section="statistics" onclick="switchDesignSection('statistics')">
+              <i class="ti ti-chart-bar"></i> Statistics
+            </button>
+            <button class="ds-section-tab" data-section="about" onclick="switchDesignSection('about')">
+              <i class="ti ti-info-circle"></i> About
+            </button>
+            <button class="ds-section-tab" data-section="testimonials" onclick="switchDesignSection('testimonials')">
+              <i class="ti ti-star"></i> Testimonials
+            </button>
+            <button class="ds-section-tab" data-section="cta" onclick="switchDesignSection('cta')">
+              <i class="ti ti-bolt"></i> CTA
+            </button>
+            <button class="ds-section-tab" data-section="contact" onclick="switchDesignSection('contact')">
+              <i class="ti ti-mail"></i> Contact
+            </button>
+            <button class="ds-section-tab" data-section="footer" onclick="switchDesignSection('footer')">
+              <i class="ti ti-forms"></i> Footer
+            </button>
+          </div>
+          <div class="ds-search-bar">
+            <i class="ti ti-search"></i>
+            <input type="text" id="sec-search-input" placeholder="Search settings..." oninput="filterSectionSettings(this.value)">
+          </div>
+          <div class="ds-controls-scroll" id="sec-controls-scroll">
+            <!-- Settings groups rendered dynamically -->
+          </div>
+        </div>
+        <!-- Right: Preview -->
+        <div class="ds-preview-panel">
+          <div class="ds-preview-card">
+            <div class="ds-preview-header">
+              <div class="ds-preview-title"><i class="ti ti-eye"></i> Live Preview</div>
+              <div class="ds-preview-tools">
+                <select id="preview-device-select" onchange="changePreviewDevice(this.value)">
+                  <option value="desktop">Desktop</option>
+                  <option value="tablet">Tablet</option>
+                  <option value="mobile">Mobile</option>
+                </select>
+                <span class="ds-preview-badge" id="preview-status-badge"><i class="ti ti-info-circle"></i> Unsaved</span>
+              </div>
+            </div>
+            <div class="ds-preview-frame" id="design-preview-frame">
+              <iframe id="preview-iframe" src="/frontend/" title="Preview"></iframe>
+            </div>
+            <div class="ds-preview-footer">
+              <div class="ds-preview-stat"><i class="ti ti-device-floppy"></i><span id="preview-save-status">Draft</span></div>
+              <div class="ds-preview-stat"><i class="ti ti-clock"></i><span id="preview-last-saved">Not saved yet</span></div>
+              <div class="ds-preview-stat"><i class="ti ti-circle-check"></i><span id="preview-publish-status">Not published</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Hidden: Global page design controls (for non-landing pages) -->
+      <div id="design-global-editor" style="display:none">
+        <div class="ds-presets-bar">
+          <span class="ds-presets-label"><i class="ti ti-template"></i> Quick Themes:</span>
+          <button class="ds-preset-btn" data-theme="modern" onclick="applyThemePreset('modern')">
+            <span class="ds-preset-swatches"><span style="background:#6366f1"></span><span style="background:#f8fafc"></span><span style="background:#1e293b"></span></span>
+            <span>Modern</span>
+          </button>
+          <button class="ds-preset-btn" data-theme="ocean" onclick="applyThemePreset('ocean')">
+            <span class="ds-preset-swatches"><span style="background:#0891b2"></span><span style="background:#ecfeff"></span><span style="background:#0f172a"></span></span>
+            <span>Ocean</span>
+          </button>
+          <button class="ds-preset-btn" data-theme="sunset" onclick="applyThemePreset('sunset')">
+            <span class="ds-preset-swatches"><span style="background:#f59e0b"></span><span style="background:#fffbeb"></span><span style="background:#1c1917"></span></span>
+            <span>Sunset</span>
+          </button>
+          <button class="ds-preset-btn" data-theme="forest" onclick="applyThemePreset('forest')">
+            <span class="ds-preset-swatches"><span style="background:#059669"></span><span style="background:#f0fdf4"></span><span style="background:#052e16"></span></span>
+            <span>Forest</span>
+          </button>
+          <button class="ds-preset-btn" data-theme="midnight" onclick="applyThemePreset('midnight')">
+            <span class="ds-preset-swatches"><span style="background:#3b82f6"></span><span style="background:#0f172a"></span><span style="background:#020617"></span></span>
+            <span>Midnight</span>
+          </button>
+        </div>
+        <div class="ds-editor-layout">
+          <div class="ds-editor-sidebar">
+            <div class="ds-search-bar">
+              <i class="ti ti-search"></i>
+              <input type="text" id="ds-search-input" placeholder="Search settings..." oninput="filterDesignSettings(this.value)">
+            </div>
+            <div class="ds-controls-scroll" id="ds-controls-scroll">
+              <!-- Colors -->
+              <div class="ds-group">
+                <div class="ds-group-header" onclick="toggleDesignCategory(this)">
+                  <div class="ds-group-title"><i class="ti ti-palette"></i><span>Colors</span></div>
+                  <div class="ds-group-actions"><span class="ds-group-count">15</span><i class="ti ti-chevron-down"></i></div>
+                </div>
+                <div class="ds-group-body open">
+                  <div class="ds-field-grid">
+                    <div class="ds-field"><label>Primary</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="primary_color"><input type="text" class="ds-clr-txt" data-key="primary_color"></div></div>
+                    <div class="ds-field"><label>Primary Dark</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="primary_dark"><input type="text" class="ds-clr-txt" data-key="primary_dark"></div></div>
+                    <div class="ds-field"><label>Primary Light</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="primary_light"><input type="text" class="ds-clr-txt" data-key="primary_light"></div></div>
+                    <div class="ds-field"><label>Secondary</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="secondary_color"><input type="text" class="ds-clr-txt" data-key="secondary_color"></div></div>
+                    <div class="ds-field"><label>Secondary Dark</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="secondary_dark"><input type="text" class="ds-clr-txt" data-key="secondary_dark"></div></div>
+                    <div class="ds-field"><label>Secondary Light</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="secondary_light"><input type="text" class="ds-clr-txt" data-key="secondary_light"></div></div>
+                    <div class="ds-field"><label>Background</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="background_color"><input type="text" class="ds-clr-txt" data-key="background_color"></div></div>
+                    <div class="ds-field"><label>Bg Secondary</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="background_secondary"><input type="text" class="ds-clr-txt" data-key="background_secondary"></div></div>
+                    <div class="ds-field"><label>Text Primary</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="text_primary"><input type="text" class="ds-clr-txt" data-key="text_primary"></div></div>
+                    <div class="ds-field"><label>Text Secondary</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="text_secondary"><input type="text" class="ds-clr-txt" data-key="text_secondary"></div></div>
+                    <div class="ds-field"><label>Text Muted</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="text_muted"><input type="text" class="ds-clr-txt" data-key="text_muted"></div></div>
+                    <div class="ds-field"><label>Success</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="success_color"><input type="text" class="ds-clr-txt" data-key="success_color"></div></div>
+                    <div class="ds-field"><label>Warning</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="warning_color"><input type="text" class="ds-clr-txt" data-key="warning_color"></div></div>
+                    <div class="ds-field"><label>Error</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="error_color"><input type="text" class="ds-clr-txt" data-key="error_color"></div></div>
+                    <div class="ds-field"><label>Info</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="info_color"><input type="text" class="ds-clr-txt" data-key="info_color"></div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ds-group">
+                <div class="ds-group-header" onclick="toggleDesignCategory(this)">
+                  <div class="ds-group-title"><i class="ti ti-text-size"></i><span>Typography</span></div>
+                  <div class="ds-group-actions"><span class="ds-group-count">7</span><i class="ti ti-chevron-down"></i></div>
+                </div>
+                <div class="ds-group-body">
+                  <div class="ds-field-grid">
+                    <div class="ds-field"><label>Font Family</label><select class="ds-sel" data-key="font_family"><option value="Inter, sans-serif">Inter</option><option value="Plus Jakarta Sans, sans-serif">Plus Jakarta Sans</option><option value="Poppins, sans-serif">Poppins</option><option value="Roboto, sans-serif">Roboto</option><option value="Nunito, sans-serif">Nunito</option><option value="system-ui, sans-serif">System UI</option></select></div>
+                    <div class="ds-field"><label>Heading Font</label><select class="ds-sel" data-key="heading_font"><option value="Inter, sans-serif">Inter</option><option value="Plus Jakarta Sans, sans-serif">Plus Jakarta Sans</option><option value="Poppins, sans-serif">Poppins</option><option value="Roboto, sans-serif">Roboto</option><option value="Nunito, sans-serif">Nunito</option><option value="system-ui, sans-serif">System UI</option></select></div>
+                    <div class="ds-field"><label>Base Font Size</label><select class="ds-sel" data-key="font_size_base"><option value="14px">14px</option><option value="15px">15px</option><option value="16px" selected>16px</option><option value="17px">17px</option><option value="18px">18px</option></select></div>
+                    <div class="ds-field"><label>Heading Size</label><select class="ds-sel" data-key="font_size_heading"><option value="24px">24px</option><option value="28px">28px</option><option value="32px" selected>32px</option><option value="36px">36px</option><option value="40px">40px</option></select></div>
+                    <div class="ds-field"><label>Small Font</label><select class="ds-sel" data-key="font_size_small"><option value="11px">11px</option><option value="12px">12px</option><option value="13px" selected>13px</option><option value="14px">14px</option></select></div>
+                    <div class="ds-field"><label>Line Height</label><select class="ds-sel" data-key="line_height"><option value="1.3">1.3</option><option value="1.4">1.4</option><option value="1.5" selected>1.5</option><option value="1.6">1.6</option><option value="1.7">1.7</option></select></div>
+                    <div class="ds-field"><label>Font Weight Normal</label><select class="ds-sel" data-key="font_weight_normal"><option value="300">Light (300)</option><option value="400" selected>Regular (400)</option><option value="500">Medium (500)</option></select></div>
+                    <div class="ds-field"><label>Font Weight Bold</label><select class="ds-sel" data-key="font_weight_bold"><option value="600">Semi-Bold (600)</option><option value="700" selected>Bold (700)</option><option value="800">Extra Bold (800)</option></select></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ds-group">
+                <div class="ds-group-header" onclick="toggleDesignCategory(this)">
+                  <div class="ds-group-title"><i class="ti ti-click"></i><span>Button Styles</span></div>
+                  <div class="ds-group-actions"><span class="ds-group-count">10</span><i class="ti ti-chevron-down"></i></div>
+                </div>
+                <div class="ds-group-body">
+                  <div class="ds-field-grid">
+                    <div class="ds-field"><label>Border Radius</label><select class="ds-sel" data-key="button_border_radius"><option value="4px">4px</option><option value="6px">6px</option><option value="8px" selected>8px</option><option value="10px">10px</option><option value="12px">12px</option><option value="9999px">Full Round</option></select></div>
+                    <div class="ds-field"><label>Font Size</label><select class="ds-sel" data-key="button_font_size"><option value="12px">12px</option><option value="13px" selected>13px</option><option value="14px">14px</option><option value="15px">15px</option></select></div>
+                    <div class="ds-field"><label>Font Weight</label><select class="ds-sel" data-key="button_font_weight"><option value="500">Medium</option><option value="600">Semi-Bold</option><option value="700" selected>Bold</option></select></div>
+                    <div class="ds-field"><label>Padding X</label><select class="ds-sel" data-key="button_padding_x"><option value="12px">12px</option><option value="14px">14px</option><option value="16px">16px</option><option value="18px" selected>18px</option><option value="20px">20px</option><option value="24px">24px</option></select></div>
+                    <div class="ds-field"><label>Padding Y</label><select class="ds-sel" data-key="button_padding_y"><option value="6px">6px</option><option value="8px">8px</option><option value="9px" selected>9px</option><option value="10px">10px</option><option value="12px">12px</option></select></div>
+                    <div class="ds-field"><label>Primary Bg</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="button_primary_bg"><input type="text" class="ds-clr-txt" data-key="button_primary_bg"></div></div>
+                    <div class="ds-field"><label>Primary Text</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="button_primary_text"><input type="text" class="ds-clr-txt" data-key="button_primary_text"></div></div>
+                    <div class="ds-field"><label>Primary Hover</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="button_primary_hover"><input type="text" class="ds-clr-txt" data-key="button_primary_hover"></div></div>
+                    <div class="ds-field"><label>Outline Border</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="button_outline_border"><input type="text" class="ds-clr-txt" data-key="button_outline_border"></div></div>
+                    <div class="ds-field"><label>Outline Text</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="button_outline_text"><input type="text" class="ds-clr-txt" data-key="button_outline_text"></div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ds-group">
+                <div class="ds-group-header" onclick="toggleDesignCategory(this)">
+                  <div class="ds-group-title"><i class="ti ti-credit-card"></i><span>Card Styles</span></div>
+                  <div class="ds-group-actions"><span class="ds-group-count">4</span><i class="ti ti-chevron-down"></i></div>
+                </div>
+                <div class="ds-group-body">
+                  <div class="ds-field-grid">
+                    <div class="ds-field"><label>Border Radius</label><select class="ds-sel" data-key="card_border_radius"><option value="8px">8px</option><option value="10px">10px</option><option value="12px">12px</option><option value="14px" selected>14px</option><option value="16px">16px</option><option value="20px">20px</option></select></div>
+                    <div class="ds-field"><label>Background</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="card_background"><input type="text" class="ds-clr-txt" data-key="card_background"></div></div>
+                    <div class="ds-field"><label>Border Color</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="card_border"><input type="text" class="ds-clr-txt" data-key="card_border"></div></div>
+                    <div class="ds-field"><label>Padding</label><select class="ds-sel" data-key="card_padding"><option value="16px">16px</option><option value="18px">18px</option><option value="20px">20px</option><option value="22px" selected>22px</option><option value="24px">24px</option><option value="28px">28px</option></select></div>
+                    <div class="ds-field"><label>Shadow</label><select class="ds-sel" data-key="card_shadow"><option value="none">None</option><option value="0 1px 2px rgba(0,0,0,0.04)">Subtle</option><option value="0 1px 4px rgba(0,0,0,0.06)">Light</option><option value="0 4px 16px rgba(0,0,0,0.1)">Medium</option><option value="0 8px 32px rgba(0,0,0,0.12)">Strong</option></select></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ds-group">
+                <div class="ds-group-header" onclick="toggleDesignCategory(this)">
+                  <div class="ds-group-title"><i class="ti ti-border-radius"></i><span>Border Radius</span></div>
+                  <div class="ds-group-actions"><span class="ds-group-count">4</span><i class="ti ti-chevron-down"></i></div>
+                </div>
+                <div class="ds-group-body">
+                  <div class="ds-field-grid">
+                    <div class="ds-field"><label>Small</label><select class="ds-sel" data-key="border_radius_sm"><option value="4px">4px</option><option value="6px">6px</option><option value="8px" selected>8px</option><option value="10px">10px</option><option value="12px">12px</option></select></div>
+                    <div class="ds-field"><label>Medium</label><select class="ds-sel" data-key="border_radius_md"><option value="8px">8px</option><option value="10px">10px</option><option value="12px" selected>12px</option><option value="14px">14px</option><option value="16px">16px</option></select></div>
+                    <div class="ds-field"><label>Large</label><select class="ds-sel" data-key="border_radius_lg"><option value="12px">12px</option><option value="14px">14px</option><option value="16px" selected>16px</option><option value="20px">20px</option><option value="24px">24px</option></select></div>
+                    <div class="ds-field"><label>Full (Pills)</label><select class="ds-sel" data-key="border_radius_full"><option value="9999px" selected>9999px</option><option value="50%">50%</option></select></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ds-group">
+                <div class="ds-group-header" onclick="toggleDesignCategory(this)">
+                  <div class="ds-group-title"><i class="ti ti-dimensions"></i><span>Spacing &amp; Layout</span></div>
+                  <div class="ds-group-actions"><span class="ds-group-count">10</span><i class="ti ti-chevron-down"></i></div>
+                </div>
+                <div class="ds-group-body">
+                  <div class="ds-field-grid">
+                    <div class="ds-field"><label>Spacing XS</label><select class="ds-sel" data-key="spacing_xs"><option value="2px">2px</option><option value="4px" selected>4px</option><option value="6px">6px</option><option value="8px">8px</option></select></div>
+                    <div class="ds-field"><label>Spacing SM</label><select class="ds-sel" data-key="spacing_sm"><option value="4px">4px</option><option value="6px">6px</option><option value="8px" selected>8px</option><option value="10px">10px</option></select></div>
+                    <div class="ds-field"><label>Spacing MD</label><select class="ds-sel" data-key="spacing_md"><option value="12px">12px</option><option value="14px">14px</option><option value="16px" selected>16px</option><option value="18px">18px</option><option value="20px">20px</option></select></div>
+                    <div class="ds-field"><label>Spacing LG</label><select class="ds-sel" data-key="spacing_lg"><option value="16px">16px</option><option value="20px">20px</option><option value="24px" selected>24px</option><option value="28px">28px</option><option value="32px">32px</option></select></div>
+                    <div class="ds-field"><label>Spacing XL</label><select class="ds-sel" data-key="spacing_xl"><option value="24px">24px</option><option value="28px">28px</option><option value="32px" selected>32px</option><option value="40px">40px</option><option value="48px">48px</option></select></div>
+                    <div class="ds-field"><label>Spacing XXL</label><select class="ds-sel" data-key="spacing_xxl"><option value="32px">32px</option><option value="40px">40px</option><option value="48px" selected>48px</option><option value="56px">56px</option><option value="64px">64px</option></select></div>
+                    <div class="ds-field"><label>Section Padding</label><select class="ds-sel" data-key="section_padding"><option value="40px">40px</option><option value="60px">60px</option><option value="80px" selected>80px</option><option value="100px">100px</option><option value="120px">120px</option></select></div>
+                    <div class="ds-field"><label>Container Width</label><select class="ds-sel" data-key="container_max_width"><option value="1100px">1100px</option><option value="1140px">1140px</option><option value="1200px" selected>1200px</option><option value="1280px">1280px</option><option value="1320px">1320px</option></select></div>
+                    <div class="ds-field"><label>Content Gap</label><select class="ds-sel" data-key="content_gap"><option value="12px">12px</option><option value="16px">16px</option><option value="20px" selected>20px</option><option value="24px">24px</option><option value="30px">30px</option></select></div>
+                    <div class="ds-field"><label>Grid Gap</label><select class="ds-sel" data-key="grid_gap"><option value="12px">12px</option><option value="16px">16px</option><option value="20px" selected>20px</option><option value="24px">24px</option><option value="30px">30px</option></select></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ds-group">
+                <div class="ds-group-header" onclick="toggleDesignCategory(this)">
+                  <div class="ds-group-title"><i class="ti ti-nav"></i><span>Navbar</span></div>
+                  <div class="ds-group-actions"><span class="ds-group-count">4</span><i class="ti ti-chevron-down"></i></div>
+                </div>
+                <div class="ds-group-body">
+                  <div class="ds-field-grid">
+                    <div class="ds-field"><label>Background</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="nav_background"><input type="text" class="ds-clr-txt" data-key="nav_background"></div></div>
+                    <div class="ds-field"><label>Text Color</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="nav_text"><input type="text" class="ds-clr-txt" data-key="nav_text"></div></div>
+                    <div class="ds-field"><label>Height</label><select class="ds-sel" data-key="nav_height"><option value="56px">56px</option><option value="60px">60px</option><option value="64px" selected>64px</option><option value="70px">70px</option><option value="80px">80px</option></select></div>
+                    <div class="ds-field"><label>Shadow</label><select class="ds-sel" data-key="nav_shadow"><option value="none">None</option><option value="0 1px 2px rgba(0,0,0,0.04)">Subtle</option><option value="0 1px 3px rgba(0,0,0,0.08)">Light</option><option value="0 4px 16px rgba(0,0,0,0.08)">Medium</option></select></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ds-group">
+                <div class="ds-group-header" onclick="toggleDesignCategory(this)">
+                  <div class="ds-group-title"><i class="ti ti-icons"></i><span>Icons</span></div>
+                  <div class="ds-group-actions"><span class="ds-group-count">3</span><i class="ti ti-chevron-down"></i></div>
+                </div>
+                <div class="ds-group-body">
+                  <div class="ds-field-grid">
+                    <div class="ds-field"><label>Icon Size</label><select class="ds-sel" data-key="icon_size"><option value="16px">16px</option><option value="18px">18px</option><option value="20px" selected>20px</option><option value="22px">22px</option><option value="24px">24px</option></select></div>
+                    <div class="ds-field"><label>Icon Color</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="icon_color"><input type="text" class="ds-clr-txt" data-key="icon_color"></div></div>
+                    <div class="ds-field"><label>Accent Color</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="icon_accent_color"><input type="text" class="ds-clr-txt" data-key="icon_accent_color"></div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ds-group">
+                <div class="ds-group-header" onclick="toggleDesignCategory(this)">
+                  <div class="ds-group-title"><i class="ti ti-moon"></i><span>Light / Dark Mode</span></div>
+                  <div class="ds-group-actions"><span class="ds-group-count">9</span><i class="ti ti-chevron-down"></i></div>
+                </div>
+                <div class="ds-group-body">
+                  <div class="ds-field-grid">
+                    <div class="ds-field"><label>Default Mode</label><select class="ds-sel" data-key="mode" onchange="toggleDarkModeFields(this.value)"><option value="light">Light Mode</option><option value="dark">Dark Mode</option></select></div>
+                    <div id="dark-mode-fields" style="grid-column:1/-1">
+                      <div class="ds-field-grid" style="padding:10px;background:var(--ds-bg-subtle);border-radius:7px;border:1px solid var(--ds-border);margin-top:4px">
+                        <div class="ds-field"><label>Primary</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="dark_primary"><input type="text" class="ds-clr-txt" data-key="dark_primary"></div></div>
+                        <div class="ds-field"><label>Background</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="dark_background"><input type="text" class="ds-clr-txt" data-key="dark_background"></div></div>
+                        <div class="ds-field"><label>Bg Secondary</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="dark_background_secondary"><input type="text" class="ds-clr-txt" data-key="dark_background_secondary"></div></div>
+                        <div class="ds-field"><label>Text Primary</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="dark_text_primary"><input type="text" class="ds-clr-txt" data-key="dark_text_primary"></div></div>
+                        <div class="ds-field"><label>Text Secondary</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="dark_text_secondary"><input type="text" class="ds-clr-txt" data-key="dark_text_secondary"></div></div>
+                        <div class="ds-field"><label>Card Background</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="dark_card_background"><input type="text" class="ds-clr-txt" data-key="dark_card_background"></div></div>
+                        <div class="ds-field"><label>Card Border</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="dark_card_border"><input type="text" class="ds-clr-txt" data-key="dark_card_border"></div></div>
+                        <div class="ds-field"><label>Nav Background</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="dark_nav_background"><input type="text" class="ds-clr-txt" data-key="dark_nav_background"></div></div>
+                        <div class="ds-field"><label>Nav Text</label><div class="ds-color-input"><input type="color" class="ds-clr" data-key="dark_nav_text"><input type="text" class="ds-clr-txt" data-key="dark_nav_text"></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ds-preview-panel">
+            <div class="ds-preview-card">
+              <div class="ds-preview-header">
+                <div class="ds-preview-title"><i class="ti ti-eye"></i> Live Preview</div>
+                <div class="ds-preview-tools">
+                  <select onchange="changePreviewDevice(this.value)">
+                    <option value="desktop">Desktop</option>
+                    <option value="tablet">Tablet</option>
+                    <option value="mobile">Mobile</option>
+                  </select>
+                  <span class="ds-preview-badge" id="preview-status-badge2"><i class="ti ti-info-circle"></i> Unsaved</span>
+                </div>
+              </div>
+              <div class="ds-preview-frame" id="design-preview-frame2">
+                <iframe id="preview-iframe2" src="/frontend/" title="Preview"></iframe>
+              </div>
+              <div class="ds-preview-footer">
+                <div class="ds-preview-stat"><i class="ti ti-device-floppy"></i><span id="preview-save-status2">Draft</span></div>
+                <div class="ds-preview-stat"><i class="ti ti-clock"></i><span id="preview-last-saved2">Not saved yet</span></div>
+                <div class="ds-preview-stat"><i class="ti ti-circle-check"></i><span id="preview-publish-status2">Not published</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================
+         PANEL: Profile — Admin user profile editor
+         ================================================================ -->
+    <div class="section-panel" id="page-profile">
+      <div class="page-header">
+        <h2><div class="page-header-icon" style="background:var(--orange-bg);color:var(--orange)"><i class="ti ti-user-circle"></i></div>My Profile</h2>
+        <p>Manage your account information</p>
+      </div>
+      <div style="max-width:680px">
+        <div class="profile-card">
+          <div class="profile-banner">
+            <div class="profile-avatar-wrap" style="cursor:pointer;position:relative;" onclick="document.getElementById('admin-profile-pic-input').click()">
+              {% if request.user.profile_picture %}
+              <img id="admin-profile-avatar-img" src="{{ request.user.profile_picture.url }}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #fff;">
+              {% else %}
+              <img id="admin-profile-avatar-img" src="" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #fff;">
+              {% endif %}
+              <div class="avatar avatar-lg" id="admin-profile-avatar-letter" style="display:{{ request.user.profile_picture|yesno:'none,flex' }};">{{ request.user.get_full_name|default:request.user.username|first|default:'A' }}</div>
+              <div style="position:absolute;bottom:0;right:8px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid #fff;"><i class="ti ti-camera"></i></div>
+            </div>
+            <input type="file" id="admin-profile-pic-input" accept="image/*" style="display:none" onchange="previewAdminProfilePic(this)">
+          </div>
+          <div style="height:28px"></div>
+          <div class="profile-body">
+            <div class="profile-name" id="admin-profile-name-display">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <div class="profile-meta">
+              <span class="badge badge-admin"><i class="ti ti-shield-check" style="font-size:8px"></i>ADMIN User</span>
+              <span style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:3px"><i class="ti ti-calendar" style="font-size:12px"></i>Joined 23/05/2026</span>
+            </div>
+            <div class="profile-tabs">
+              <button class="profile-tab active"><i class="ti ti-user" style="font-size:12px"></i> Profile</button>
+              <button class="profile-tab"><i class="ti ti-chart-bar" style="font-size:12px"></i> Stats</button>
+            </div>
+            <div id="admin-pic-preview" style="display:none;text-align:center;margin-bottom:10px;padding:10px;background:var(--green-bg);border-radius:7px;">
+              <img id="admin-pic-preview-img" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--green);">
+              <p style="font-size:11px;color:var(--green);margin-top:3px;">New picture selected &mdash; save to apply</p>
+            </div>
+            <div class="card-title" style="margin-bottom:14px"><i class="ti ti-edit" style="background:var(--bg);color:var(--text2)"></i>Edit Profile</div>
+            <div class="form-group" style="margin-bottom:12px"><label><i class="ti ti-user" style="font-size:10px"></i> Full Name</label><input type="text" id="admin-profile-full-name" value="{{ request.user.get_full_name|default:'' }}"></div>
+            <div class="form-group" style="margin-bottom:12px"><label><i class="ti ti-at" style="font-size:10px"></i> Username</label><input type="text" id="admin-profile-username" value="{{ request.user.username }}"></div>
+            <div class="form-group" style="margin-bottom:12px"><label><i class="ti ti-mail" style="font-size:10px"></i> Email</label><input type="email" id="admin-profile-email" value="{{ request.user.email }}"></div>
+            <div class="form-group" style="margin-bottom:4px"><label><i class="ti ti-shield" style="font-size:10px"></i> User Type</label><input type="text" value="Administrator" disabled></div>
+            <p style="font-size:11px;color:var(--text3);margin-bottom:16px;display:flex;align-items:center;gap:3px"><i class="ti ti-info-circle"></i>User type cannot be changed after registration</p>
+            <div class="save-bar">
+              <button class="btn btn-primary" style="flex:1" onclick="handleAdminUpdateProfile()"><i class="ti ti-device-floppy"></i>Save Changes</button>
+              <button class="btn btn-outline" onclick="showPage('settings')"><i class="ti ti-settings"></i>Settings</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div class="card" style="text-align:center;cursor:pointer;padding:20px 14px;transition:all .2s" onclick="showPage('notifications')" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform='none'">
+            <div style="width:44px;height:44px;background:var(--red-bg);border-radius:11px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:22px;color:var(--red)"><i class="ti ti-bell"></i></div>
+            <strong style="font-size:13px;display:block">Notifications</strong>
+            <p style="font-size:11px;color:var(--text2);margin-top:2px">View your alerts</p>
+          </div>
+          <div class="card" style="text-align:center;cursor:pointer;padding:20px 14px;transition:all .2s" onclick="showPage('settings')" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform='none'">
+            <div style="width:44px;height:44px;background:var(--bg);border-radius:11px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:22px;color:var(--text2)"><i class="ti ti-settings"></i></div>
+            <strong style="font-size:13px;display:block">Settings</strong>
+            <p style="font-size:11px;color:var(--text2);margin-top:2px">Customize your app</p>
+          </div>
+          <div class="card" style="text-align:center;cursor:pointer;padding:20px 14px;transition:all .2s" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform='none'">
+            <div style="width:44px;height:44px;background:var(--green-bg);border-radius:11px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:22px;color:var(--green)"><i class="ti ti-users"></i></div>
+            <strong style="font-size:13px;display:block">Friends</strong>
+            <p style="font-size:11px;color:var(--text2);margin-top:2px">Manage friends</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<footer class="dashboard-footer"><p>ASL Connect</p></footer>
+<script defer src="{% static 'admin_dashboard/js/main.js' %}"></script>
+</body>
+</html>
